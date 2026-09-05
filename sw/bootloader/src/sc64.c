@@ -90,6 +90,10 @@ typedef struct {
 static bool use_cmd_irq = false;
 static volatile bool wait_cmd_irq = false;
 
+/* These wrappers exclusively own the N64 SD command cursor. */
+static bool sector_known;
+static uint32_t sector_next;
+
 
 static sc64_error_t sc64_execute_cmd (sc64_cmd_t *cmd) {
     uint32_t sr;
@@ -461,6 +465,7 @@ sc64_error_t sc64_usb_write (void *address, uint8_t type, uint32_t length) {
 
 
 sc64_error_t sc64_sd_card_init (void) {
+    sector_known = false;
     sc64_cmd_t cmd = {
         .id = CMD_ID_SD_CARD_OP,
         .arg = { (uint32_t) (NULL), SD_CARD_OP_INIT }
@@ -469,6 +474,7 @@ sc64_error_t sc64_sd_card_init (void) {
 }
 
 sc64_error_t sc64_sd_card_deinit (void) {
+    sector_known = false;
     sc64_cmd_t cmd = {
         .id = CMD_ID_SD_CARD_OP,
         .arg = { (uint32_t) (NULL), SD_CARD_OP_DEINIT }
@@ -512,17 +518,21 @@ static sc64_error_t sc64_sd_sector_set (uint32_t sector) {
 
 sc64_error_t sc64_sd_read_sectors (void *address, uint32_t sector, uint32_t count) {
     sc64_error_t error;
-    if ((error = sc64_sd_sector_set(sector)) != SC64_OK) {
-        return error;
+    if (!sector_known || sector != sector_next) {
+        if ((error = sc64_sd_sector_set(sector)) != SC64_OK) {
+            sector_known = false;
+            return error;
+        }
     }
-    sc64_cmd_t cmd = {
-        .id = CMD_ID_SD_READ,
-        .arg = { (uint32_t) (address), count }
-    };
-    return sc64_execute_cmd(&cmd);
+    sc64_cmd_t cmd = { .id = CMD_ID_SD_READ, .arg = { (uint32_t)address, count } };
+    error = sc64_execute_cmd(&cmd);
+    sector_known = error == SC64_OK;
+    sector_next = sector + count;
+    return error;
 }
 
 sc64_error_t sc64_sd_write_sectors (void *address, uint32_t sector, uint32_t count) {
+    sector_known = false;
     sc64_error_t error;
     if ((error = sc64_sd_sector_set(sector)) != SC64_OK) {
         return error;
