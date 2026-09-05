@@ -38,6 +38,19 @@ void fpga_reg_set (fpga_reg_t reg, uint32_t value) {
     hw_spi_stop();
 }
 
+/* The existing FPGA register protocol advances after each little-endian word.
+   Callers order trigger registers last; one CS frame contains the full group. */
+void fpga_reg_set_words (fpga_reg_t reg, const uint32_t *values, size_t count) {
+    uint8_t header[2] = { CMD_REG_WRITE, (uint8_t) reg };
+    if (count == 0) {
+        return;
+    }
+    hw_spi_start();
+    hw_spi_tx(header, sizeof(header));
+    hw_spi_tx((uint8_t *) values, count * sizeof(*values));
+    hw_spi_stop();
+}
+
 void fpga_mem_read (uint32_t address, size_t length, uint8_t *buffer) {
     fpga_cmd_t cmd = CMD_MEM_READ;
     uint8_t buffer_address = 0;
