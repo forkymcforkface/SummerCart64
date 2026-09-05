@@ -50,6 +50,7 @@ memory layout plausible; they do not establish that the combined SC64 design
 fits or meets timing. Integrated vendor-tool synthesis/place-and-route and
 hardware testing are still required. This variant has not been flashed.
 
-The next experiment is the cached decoder plus compositor sharing a modeled
-memory bus, followed by the real SC64 memory bridge. Standalone LZW cycles omit
+The [combined experiment](../cached-compositor/README.md) checks this decoder
+and compositor sharing a modeled memory bus. The real SC64 bridge is still
+unimplemented. Standalone LZW cycles omit
 canvas composition, packed output, PI transfer, RDP work and normal cart traffic.
