@@ -62,3 +62,13 @@ On the same original Final Fight loop it records 106,643,169 prefix reads and
 1,024-entry cache hits 89.64%. These are cache-model results, not a proven FPGA
 speedup or resource fit. A possible future layout combines external dictionary
 storage, a small on-chip cache and an exclusively leased general-buffer stack.
+
+`repeated_payload.py ORIGINAL.gif OUTPUT.json` checks exact consecutive payload
+and metadata equality against Pillow-composed RGBA pixels. It admits reuse only
+for disposal 0/1 and records frame indices, not generated animation assets.
+Final Fight passes all 1,717 images with **407 identical retained frames**;
+maximum compressed image payload is 25,747 bytes. Runtime source reading,
+exact comparison, storage, frame identity and presentation timing still have
+costs and ownership requirements. This is an unimplemented optimization
+candidate, not an accepted decoder speedup. Outputs stay outside this source
+directory; Python/Pillow are developer-test dependencies only.
