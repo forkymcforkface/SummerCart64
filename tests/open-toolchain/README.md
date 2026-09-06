@@ -105,6 +105,15 @@ only preserve hard cells for elaboration; they do not implement those cells.
 
 ## Remaining work
 
+The [release reference tools](release/README.md) reproduce the current release
+package byte-for-byte using source-rebuilt CPU components and explicitly
+reference-derived FPGA configuration/metadata. This is not an all-source FPGA
+build. The [guarded RAM inference experiment](memory/README.md) removes the
+full-design register expansion and passes formal/model checks; placement
+completes under diagnostic constraints, but EFB routing and timing remain
+unqualified. [Alternative tool research](research-tools.md) records verified
+file-conversion capabilities and remaining configuration evidence requirements.
+
 1. Qualify packing, routing, configuration bits, and timing for EFB (including
    UFM access), ODDRXE (the external SDRAM clock), and FIFO8KB. Adding empty
    declarations does not supply any of this behavior.
