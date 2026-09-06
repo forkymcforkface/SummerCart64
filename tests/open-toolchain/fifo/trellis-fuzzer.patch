@@ -1,0 +1,13 @@
+diff --git a/fuzzers/machxo2/040-ebr_routing/mk_nets.py b/fuzzers/machxo2/040-ebr_routing/mk_nets.py
+index 57e0f02..01301a4 100644
+--- a/fuzzers/machxo2/040-ebr_routing/mk_nets.py
++++ b/fuzzers/machxo2/040-ebr_routing/mk_nets.py
+@@ -24,4 +24,4 @@ def ebr_conns(tile):
+-    netlist.append(("R{}C{}_JAE_EBR".format(tile[0], tile[1]), "sink"))
+-    netlist.append(("R{}C{}_JAF_EBR".format(tile[0], tile[1]), "sink"))
+-    netlist.append(("R{}C{}_JEF_EBR".format(tile[0], tile[1]), "sink"))
+-    netlist.append(("R{}C{}_JFF_EBR".format(tile[0], tile[1]), "sink"))
++    netlist.append(("R{}C{}_JAE_EBR".format(tile[0], tile[1]), "driver"))
++    netlist.append(("R{}C{}_JAF_EBR".format(tile[0], tile[1]), "driver"))
++    netlist.append(("R{}C{}_JEF_EBR".format(tile[0], tile[1]), "driver"))
++    netlist.append(("R{}C{}_JFF_EBR".format(tile[0], tile[1]), "driver"))

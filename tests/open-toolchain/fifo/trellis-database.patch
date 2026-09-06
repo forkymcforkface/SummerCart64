@@ -1,0 +1,32 @@
+diff --git a/MachXO2/tiledata/EBR0/bits.db b/MachXO2/tiledata/EBR0/bits.db
+index d6bfed4..a62e8e4 100644
+--- a/MachXO2/tiledata/EBR0/bits.db
++++ b/MachXO2/tiledata/EBR0/bits.db
+@@ -201 +201 @@ PDPW8KC -
+-.fixed_conn JAE_EBR E1_JQ4
++.fixed_conn E1_JQ4 JAE_EBR
+@@ -203 +203 @@ PDPW8KC -
+-.fixed_conn JAF_EBR E1_JF4
++.fixed_conn E1_JF4 JAF_EBR
+@@ -261 +261 @@ PDPW8KC -
+-.fixed_conn JEF_EBR E1_JQ3
++.fixed_conn E1_JQ3 JEF_EBR
+@@ -269 +269 @@ PDPW8KC -
+-.fixed_conn JFF_EBR E1_JF3
++.fixed_conn E1_JF3 JFF_EBR
+diff --git a/MachXO2/tiledata/EBR0_END/bits.db b/MachXO2/tiledata/EBR0_END/bits.db
+index b78b6f7..466a8ff 100644
+--- a/MachXO2/tiledata/EBR0_END/bits.db
++++ b/MachXO2/tiledata/EBR0_END/bits.db
+@@ -201 +201 @@ PDPW8KC -
+-.fixed_conn JAE_EBR E1_JQ4
++.fixed_conn E1_JQ4 JAE_EBR
+@@ -203 +203 @@ PDPW8KC -
+-.fixed_conn JAF_EBR E1_JF4
++.fixed_conn E1_JF4 JAF_EBR
+@@ -261 +261 @@ PDPW8KC -
+-.fixed_conn JEF_EBR E1_JQ3
++.fixed_conn E1_JQ3 JEF_EBR
+@@ -269 +269 @@ PDPW8KC -
+-.fixed_conn JFF_EBR E1_JF3
++.fixed_conn E1_JF3 JFF_EBR
