@@ -69,6 +69,40 @@ The pinned suite runs Yosys `0.68+195` and nextpnr
   routing with an explicit unsupported-cell error (exit 125). The aggregate
   capability test correctly returns failure. No test image is flashed.
 
+## Diagnostic backend experiments
+
+The baseline image above remains unchanged. Optional, separately guarded
+backend patches live under [EFB](efb/README.md), [ODDRXE](oddr/README.md), and
+[FIFO8KB](fifo/README.md). Each directory owns its focused reproduction and
+negative checks. They add research capabilities, not a qualified SC64 build.
+
+Build their combined image from the same context after the pinned base:
+
+```sh
+docker build -f tests/open-toolchain/Dockerfile.diagnostic \
+  -t sc64-open:diagnostic tests/open-toolchain
+docker image inspect sc64-open:7000 sc64-open:diagnostic --format '{{.Id}}'
+```
+
+This build verifies clean source pins, applies all three patches, corrects
+the FIFO flag routing graph, installs the corrected database, and regenerates
+the 7000 nextpnr database. It also installs checksum-pinned sv2v v0.0.13 for the
+optional [interface/high-Z frontend experiment](frontend/README.md). Record
+both image IDs with the test logs. The default
+command still rejects unqualified primitives; explicit flags permit only the
+documented diagnostics. EFB bitstream emission always fails.
+
+The [constraint inventory](constraints/README.md) preserves every original LPF
+statement and returns exit 3 for the current SC64 project: valid inventory,
+unresolved qualification. The [integration audit](integration-audit.md) records
+the additional timing, configuration, initialization and programming-format
+work. Neither a routed fixture nor a pack/unpack roundtrip establishes physical
+equivalence to the vendor toolchain.
+
+The full-source probe accepts repeated `--primitive declaration.v` arguments
+and records their hashes separately from original source hashes. Declarations
+only preserve hard cells for elaboration; they do not implement those cells.
+
 ## Remaining work
 
 1. Qualify packing, routing, configuration bits, and timing for EFB (including
