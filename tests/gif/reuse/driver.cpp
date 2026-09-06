@@ -32,7 +32,7 @@ struct Rig {
  bool frame(const std::vector<uint8_t>&v,const std::array<uint32_t,6>&m={},unsigned epoch=1,unsigned disp=0,bool success=true){begin(v.size(),m,epoch,disp);feed(v);return finish(v,success);}
  void cancel(){d.cancel=1;tick();d.cancel=0;d.in_valid=0;while(!d.cancelled)tick();idle();check(!d.configured,"cancel config");auto n=writes+reads;for(unsigned i=0;i<10;i++)tick();check(n==writes+reads,"late cancel beat");configure();}
 };
-int main(int argc,char**argv){try{check(argc==2||argc==3,"usage payloads.bin [focused]");Rig r;
+int main(int argc,char**argv){try{check(argc==2||argc==3,"usage payloads.bin [focused]");{ Rig r;
  std::vector<uint8_t>v(25747);for(unsigned i=0;i<v.size();i++)v[i]=(i*37)^0x5a;
  check(!r.frame(v),"initial hit");check(r.frame(v),"identical miss");v.back()^=1;check(!r.frame(v),"last byte mismatch hit");
  v.pop_back();check(!r.frame(v),"size mismatch hit");
@@ -60,7 +60,7 @@ int main(int argc,char**argv){try{check(argc==2||argc==3,"usage payloads.bin [fo
   r.cancel();check(!r.frame(std::vector<uint8_t>{0x1e,0xbd,0x6c}),"cancel reused opposite payload");
  }
  if(argc==3){std::cout<<"PASS focused metadata_bits=192 cancellation_offsets=80 cancellation_phases=5 invalid_arenas=5\n";return 0;}
- r.configure();std::ifstream f(argv[1],std::ios::binary);check(bool(f),"open fixtures");unsigned count=word(f),hits=0;std::vector<uint8_t>prior;std::array<uint32_t,6>pm{};unsigned pe=0,pd=7;bool valid=false;uint64_t start=r.cycles,sr=r.reads,sw=r.writes;
+ } Rig r;std::ifstream f(argv[1],std::ios::binary);check(bool(f),"open fixtures");unsigned count=word(f),hits=0;std::vector<uint8_t>prior;std::array<uint32_t,6>pm{};unsigned pe=0,pd=7;bool valid=false;uint64_t start=r.cycles,sr=r.reads,sw=r.writes;
  for(unsigned i=0;i<count;++i){unsigned n=word(f),epoch=word(f),disp=word(f);check(n>0&&n<=25747,"fixture length");std::array<uint32_t,6>meta;for(auto&x:meta)x=word(f);std::vector<uint8_t>raw(n);f.read(reinterpret_cast<char*>(raw.data()),n);check(bool(f),"fixture payload");bool expected=valid&&disp<=1&&pd<=1&&pe==epoch&&meta==pm&&raw==prior;bool hit=r.frame(raw,meta,epoch,disp);check(hit==expected,"original reuse disagreement");hits+=hit;prior=raw;pm=meta;pe=epoch;pd=disp;valid=true;}
  for(unsigned i=0;i<8;i++)check(r.ram[i]==0xa5&&r.ram[51504+i]==0xa5,"guards");
  std::cout<<"PASS original_frames="<<count<<" exact_hits="<<hits<<" cycles="<<r.cycles-start<<" reads="<<r.reads-sr<<" writes="<<r.writes-sw<<" metadata_bits=192 cancellation_offsets=80\n";

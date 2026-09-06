@@ -73,9 +73,11 @@ GIF framing and downstream decode/compose integration remain separate owners.
 
 Recorded baseline: all 1717 original Final Fight payloads pass, with 407 exact
 runtime hits. The run includes 33507709 incoming-byte writes and 33645069
-comparison/replay reads, taking 437670720 cycles in the fresh parent run with
-the strengthened fixture preflight. Synthetic stall phase depends on the
-preceding preflight; this count is not a stable hardware timing benchmark.
+comparison/replay reads, taking 437670572 cycles with a fresh Rig for the
+original-frame phase. This boundary makes paired variants start from identical
+timing state. The preliminary reused-Rig parent run took 437670720 cycles;
+its preflight-dependent stall phase is not the matched A/B baseline. Neither
+count is a hardware timing measurement.
 The strengthened focused suite additionally passes cancellation in miss replay
 before issue, during an issued read, with output stalled, before commit, and
 in hit RESULT; opposite-pattern restart is verified. Five invalid arena classes
