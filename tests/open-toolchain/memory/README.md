@@ -100,3 +100,27 @@ primitive/constraint toolchain gaps, and hardware qualification still apply.
 The physical baseline uses 18 RAM plus four FIFO blocks, leaving only four of
 26 EBRs; adding the experimental seven-EBR cached GIF decoder/compositor still
 requires a separate memory-sharing or resource-reduction design.
+
+## Parent physical diagnostic
+
+The parent independently repeats both runners in the combined diagnostic image
+at `build/sc64-open-memory/parent-focused` and `parent-full`, obtaining the same
+counts and checks. After preserving the original PLL analog metadata with
+`../oddr/preserve_pll_metadata.py`, nextpnr rejects the unchanged release LPF at
+`IOBUF ALLPORTS`. This remains a failed original-constraint build.
+
+A separate diagnostic LPF containing only original `LOCATE COMP` and `IOBUF
+PORT` statements retains all original package pin assignments and explicit
+per-port electrical statements. With the existing EFB/ODDR/FIFO routing opt-ins,
+the full design completes placement. Total physical LUT use, including carries
+and distributed RAM, is 5,383/6,864 (78%). The pre-route estimate is 57.32 MHz,
+failing the requested 100 MHz; missing hard-cell timing and omitted constraints
+prevent treating this as a qualified frequency.
+
+Routing fails on `$PACKER_GND_NET` arc 5. A same-run pre-route user inventory
+identifies `vendor_inst.efb_lattice_generated_inst.EFBInst_0.I2C1SDAI` as that
+endpoint. No connection is removed and no FPGA configuration is emitted.
+Evidence: `parent-full/{route,pins-route,place,ground-route}.log`,
+`physical.json`, `pll-metadata.json`, and `pins-only-diagnostic.lpf`.
+This test establishes a concrete next routing defect, not successful routing
+or satisfaction of the original SDRAM and configuration constraints.
