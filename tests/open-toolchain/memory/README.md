@@ -101,6 +101,25 @@ The physical baseline uses 18 RAM plus four FIFO blocks, leaving only four of
 26 EBRs; adding the experimental seven-EBR cached GIF decoder/compositor still
 requires a separate memory-sharing or resource-reduction design.
 
+## Independent vendor-model comparison
+
+`physical.py` exports the focused runner's mapped 512x16 fixture and compares it
+against the original source using a caller-supplied installed Lattice DP8KC
+simulation model. It initializes every address, then checks 6,000 cycles across
+all read/write collision modes. The parent run passes; model SHA-256 is
+`97d08937610d1ca8c4701e4090f5f81a27578a335825db2c1b688e9b9d9dee45`.
+Evidence: `build/sc64-open-memory/parent-physical/`. The model is not distributed
+with this repository. Logical read-enable holds remain covered by the separate
+generic formal fixture; this physical fixture has both logical reads enabled.
+
+```sh
+python3 -B tests/open-toolchain/memory/physical.py /out/memory-focused \
+    /installed/diamond/cae_library/simulation/verilog/machxo2/DP8KC.v \
+    /out/memory-physical
+```
+
+This is a functional model comparison, not a timing simulation or cart test.
+
 ## Parent physical diagnostic
 
 The parent independently repeats both runners in the combined diagnostic image
