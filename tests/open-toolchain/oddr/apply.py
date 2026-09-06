@@ -3,11 +3,17 @@
 from pathlib import Path
 import sys
 root=Path(sys.argv[1])/'machxo2'
+pending={}
+if 'specific.add_options()("oddr-diagnostic"' in (root/'main.cc').read_text():
+    raise SystemExit('ODDR diagnostic patch already present; no files written')
 def edit(name,old,new):
     path=root/name
-    text=path.read_text()
-    assert text.count(old)==1,(name,text.count(old),old[:60])
-    path.write_text(text.replace(old,new))
+    text=pending.get(path)
+    if text is None:
+        text=path.read_text()
+    if text.count(old)!=1:
+        raise SystemExit(f'{name}: expected one patch anchor, found {text.count(old)}; no files written')
+    pending[path]=text.replace(old,new)
 edit('main.cc','    specific.add_options()("disable-router-lutperm",',
      '    specific.add_options()("oddr-diagnostic", "allow untimed ODDRXE diagnostic routing; NOT hardware qualified");\n\n    specific.add_options()("disable-router-lutperm",')
 edit('main.cc','    return ctx;','    if (vm.count("oddr-diagnostic"))\n        ctx->settings[ctx->id("arch.oddr_diagnostic")] = 1;\n    return ctx;')
@@ -94,7 +100,6 @@ edit('bitstream.cc','            } else if (ci->type == id_OSCH) {',
 '''            } else if (ci->type.in(id_IOLOGIC, id_BIOLOGIC, id_BSIOLOGIC, id_TIOLOGIC, id_TSIOLOGIC, id_RIOLOGIC)) {
                 write_oddr(ci);
             } else if (ci->type == id_OSCH) {''')
-print('Applied diagnostic ODDRXE pack, route endpoint, and configuration support')
 
 # Generated SC64 wrappers expose disabled hard Wishbone pins as constant lows.
 # Those pins have fixed EFB wiring, not fabric routing; guard every removal.
@@ -142,3 +147,7 @@ edit('main.cc','void MachXO2CommandHandler::customAfterLoad(Context *ctx)\n{',
 '''void MachXO2CommandHandler::customAfterLoad(Context *ctx)
 {
     ctx->settings[ctx->id("arch.oddr_diagnostic")] = vm.count("oddr-diagnostic") ? 1 : 0;''')
+
+for path,text in pending.items():
+    path.write_text(text)
+print('Applied diagnostic ODDRXE pack, route endpoint, and configuration support')

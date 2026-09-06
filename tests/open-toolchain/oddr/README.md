@@ -56,6 +56,21 @@ rejected. PLL parameters and active clock paths remain unchanged.
 
 ## Source metadata preservation
 
+Patch application validates every anchor in memory before writing any source;
+an already patched tree is rejected. This prevents anchor failures leaving a
+partial patch (it is not a filesystem transaction against disk I/O failure).
+Negative probes require exit 125, the intended diagnostic and no configuration
+file. An unrelated failure cannot satisfy a guard test.
+
+Focused guard fixtures run without the FPGA toolchain:
+
+```sh
+python3 -B tests/open-toolchain/oddr/guard_test.py /path/to/build/oddr-guards
+```
+
+The metadata bridge rejects resolved-path and existing-file aliases among its
+four paths before writing. Input hashes come from the original input bytes.
+
 Native Yosys `read_verilog` drops the generated wrapper's `synthesis` comment
 attributes ICP_CURRENT and LPF_RESISTOR. The upstream writer otherwise silently
 uses zero. Diagnostic PLL configuration now rejects either missing attribute.

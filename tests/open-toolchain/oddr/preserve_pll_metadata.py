@@ -7,7 +7,12 @@ It modifies diagnostic JSON only; RTL and numeric source values are unchanged.
 import argparse,hashlib,json,re
 from pathlib import Path
 p=argparse.ArgumentParser();p.add_argument('wrapper',type=Path);p.add_argument('netlist',type=Path);p.add_argument('output',type=Path);p.add_argument('manifest',type=Path);a=p.parse_args()
-raw=a.wrapper.read_bytes();text=raw.decode();j=json.loads(a.netlist.read_text())
+paths=[a.wrapper,a.netlist,a.output,a.manifest]
+for i,left in enumerate(paths):
+ for right in paths[i+1:]:
+  if left.resolve()==right.resolve() or (left.exists() and right.exists() and left.samefile(right)):
+   p.error('wrapper, input JSON, output JSON and manifest must be distinct files')
+raw=a.wrapper.read_bytes();input_raw=a.netlist.read_bytes();text=raw.decode();j=json.loads(input_raw)
 values={}
 for key in ('ICP_CURRENT','LPF_RESISTOR'):
  matches=re.findall(r'/\*\s*synthesis\s+'+key+r'="(\d+)"\s*\*/',text)
@@ -23,4 +28,4 @@ for key,value in values.items():
  assert existing is None or int(existing,2)==value,(key,existing)
  cell['attributes'][key]=format(value,'032b')
 a.output.write_text(json.dumps(j)+'\n')
-a.manifest.write_text(json.dumps(dict(wrapper=str(a.wrapper),wrapper_sha256=hashlib.sha256(raw).hexdigest(),input_json_sha256=hashlib.sha256(a.netlist.read_bytes()).hexdigest(),cell=name,attributes=values),indent=2)+'\n')
+a.manifest.write_text(json.dumps(dict(wrapper=str(a.wrapper),wrapper_sha256=hashlib.sha256(raw).hexdigest(),input_json_sha256=hashlib.sha256(input_raw).hexdigest(),cell=name,attributes=values),indent=2)+'\n')
