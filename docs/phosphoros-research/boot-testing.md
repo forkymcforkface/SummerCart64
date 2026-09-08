@@ -1034,3 +1034,64 @@ SC64 loader production carts/lint pass after adding the existing packaging
 LF-checkout convention for its patch. Generated header b3a5ca77458dd8ac6918de7676324792f9e045458a222e6a53a45e0c32515818
 matches the isolated hardware winner. Current clean integrated ROM a5f392fa72a2b2b8208e1d7654a652fff2c5dee98cde06c56390224352916120
 is queued for real-cart qualification. No production loader commit yet.
+
+### Accepted loader/protocol and next software round
+
+Root2ac737a6 accepts the whole-cache menu IPL3 change; f9d5294e adds its fault
+gates. Integrated clean menu boots warm356ms, music382ms. Root57ce0a31 and
+vendor19c7387 accept negotiated READ_AT. The full production matrix passes.
+Rebuilt MCU app SHA256 is ff00d9ed7f6a994a0478642055d8d97b78f370478bb71b1d0d58fcf3088d4a1f.
+Original MCU recovery loader, FPGA and formatter remain unchanged.
+
+Clean combined menu0e3b9b406790d4f39a558e9960fd961522407df0622fba47858a8b6ff4bbc67d
+boots warm344/344ms on READ_AT firmware, music371/371ms. Restored original MCU
+fallback boots357/357ms, music384ms. Full firmware readback verifies restoration.
+Fresh playback records576UI/574GIF frames, zero underruns/producer overruns;
+both theme switches succeed with zero settled retirement. Rootfe0668fb adds
+the native gate;293ff192 documents integration.
+
+Matched078e Count trials include platform initialization: READ_AT warm ready
+counts25066226/25098953/25090489 versus new-MCU legacy restored25810345/25802257.
+Original-MCU restored baseline25644962 confirms baseline variation. Net original
+firmware gain is approximately11-12ms; within-new-firmware gain approximately15ms.
+Count/46875 gives milliseconds in the common CPU epoch, not power-on wall time.
+
+Further original-MCU isolated trials, all Final Fight and complete boot/music:
+
+| Candidate | Candidate ready ms | Restored ready ms | Disposition |
+| --- | --- | --- | --- |
+| Completed-input decoder loop |366/366/364|367/367|No convincing entry gain; reject|
+| Bounded configuration store key |360/360|367/366|Positive isolated; current integration pending|
+| Lazy directory advance |366/359|360/363|Variable; no demonstrated gain|
+| Consolidated startup heap log |358/358|362/362|Positive isolated; current integration pending|
+
+Completed-loop entry counts7988637/7993651/7998138 overlap restored7990741/7993794.
+Literal-branch decoder likewise shows no convincing gain. Literal-pointer
+scheduling has a possible sub-millisecond gain overlapping variation and remains
+unaccepted. Text-only O2 shows an isolated actual-SD benefit (376ms versus386/382ms
+bracket), but requires latest-stack testing. None of these decoder/compiler
+experiments is in production.
+
+Two complete diagnostic boots identify sound reload34.10/34.14ms: scan10.06/10.11,
+FX15.56/15.53 and playlist8.45ms. Theme view refresh costs12.93ms. Root scan totals
+55.70/55.10ms;16 directory opens cost25.17/24.99ms,30 next calls3.16/3.15ms, first
+systems.dat load6.66/6.54ms, rebuild9.16/9.05ms. Scopes overlap; do not sum them.
+Instrumentation reports after ready; its music timing is not a production
+benchmark. Agents continue from measured costs. Evidence is under
+E:/phosphor-boot-round3/hardware and the named experiment directories.
+
+Permanent MCU suite integration is in progress. Initial parent runs fail because
+the SDL image lacks Git and an SC64-only Ubuntu mount cannot resolve submodule
+Git metadata. Neither is a pass. The standalone new READ_AT fixture passes on
+Ubuntu24; the full suite needs intact parent Git layout. Earlier Debian sanitizer
+failures remain unexplained and recorded. Final persistent clean-menu deployment
+and scratch removal remain pending.
+
+The permanent MCU suite now passes in Ubuntu24 with the intact read-only parent
+and submodule Git layout: cursor12,571 cases/10,868 I/O events; SPI168,608;
+SD groups93,248; formatter544,796; READ_AT4,224 plus24 overflow cases and precise
+cursor/bounds negatives. FAT32/exFAT corruption and bounded64MiB tests pass.
+Vendor7e37906 commits the new gate and b4f4942 documents it. Parent reviewed
+full-suite.log and exit0 under E:/phosphor-boot-round3/mcu-followup/vendor-final-full-suite.
+The same accepted READ_AT MCU is reinstalled; full backup readback again verifies
+its exact application, original recovery loader and unchanged FPGA/bootloader.

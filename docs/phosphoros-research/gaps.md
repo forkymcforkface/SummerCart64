@@ -137,3 +137,20 @@ its fixed8KiB buffer and intentionally rejects these malformed requests; it
 leaves legacy commands unchanged. Source evidence and independent review live
 under E:/phosphor-boot-round3/read-at-atomic/legacy-translation-gap.md and
 E:/phosphor-boot-round3/gap-review/read-at-final-qualification-review.md.
+
+## Software boot follow-up status (2026-09-08)
+
+The private READ_AT integration is accepted in vendor19c7387/root57ce0a31 after
+real-cart protocol/error cases, unchanged-component readback and current-menu
+344ms warm boot versus357ms old-firmware fallback. Its default actual-source
+MCU gate is vendor7e37906. This does not fix the independent legacy oversized
+address translation gap above; no malformed legacy operation is tested on cart.
+
+Current measured follow-ups: sound reload34ms (scan10ms, FX15.5ms, playlist8.5ms),
+initial directory opens25ms and systems.dat first load6.5ms. Counters overlap.
+Agents investigate narrow improvements with first-input sounds, original data
+semantics, error propagation and resource ownership preserved. Config key
+formatting and startup log consolidation have isolated positive results and
+await current-stack acceptance. Lazy directory advance and decoder microchanges
+have no convincing reproducible gain so far; they are not production changes.
+No FPGA or clock modification belongs to this software round.
