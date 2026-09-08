@@ -34,6 +34,7 @@ typedef enum {
     CMD_ID_SD_CARD_OP = 'i',
     CMD_ID_SD_SECTOR_SET = 'I',
     CMD_ID_SD_READ = 's',
+    CMD_ID_SD_READ_AT = 'R',
     CMD_ID_SD_WRITE = 'S',
     CMD_ID_DISK_MAPPING_SET = 'D',
     CMD_ID_WRITEBACK_PENDING = 'w',
@@ -94,6 +95,7 @@ typedef enum {
 
 typedef enum {
     DIAGNOSTIC_ID_VOLTAGE_TEMPERATURE = 0,
+    DIAGNOSTIC_ID_READ_AT = 0x50485241,
 } diagnostic_id_t;
 
 typedef enum {
@@ -290,6 +292,10 @@ static bool cfg_set_save_type (save_type_t save_type) {
 
 static bool cfg_read_diagnostic_data (uint32_t *args) {
     switch (args[0]) {
+        case DIAGNOSTIC_ID_READ_AT:
+            args[0] = 0x52415431;
+            args[1] = 0x52010010;
+            break;
         case DIAGNOSTIC_ID_VOLTAGE_TEMPERATURE: {
             uint16_t voltage;
             int16_t temperature;
@@ -697,6 +703,19 @@ void cfg_process (void) {
             }
             p.sd_card_sector = p.data[0];
             break;
+        }
+
+        case CMD_ID_SD_READ_AT: {
+            sd_error_t error = sd_get_lock(SD_LOCK_N64);
+            if (error != SD_OK) {
+                return cfg_cmd_reply_error(ERROR_TYPE_SD_CARD, error);
+            }
+            p.sd_card_sector = p.data[0];
+            if (p.data[1] > DATA_BUFFER_SIZE / SD_SECTOR_SIZE && p.data[1] < 0x800000) {
+                return cfg_cmd_reply_error(ERROR_TYPE_SD_CARD, SD_ERROR_INVALID_ADDRESS);
+            }
+            p.data[0] = 0x1FFE0000;
+            __attribute__((fallthrough));
         }
 
         case CMD_ID_SD_READ: {
