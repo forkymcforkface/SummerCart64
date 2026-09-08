@@ -314,3 +314,29 @@ The earlier generic deferred-logo task is superseded by user-selected image
 removal; diagnostic text stays resident.
 
 After verification the original Ghosts'N Goblins theme is restored through the normal theme switch funnel; its music starts successfully. Final Fight remains the performance workload for all comparisons above.
+
+## Software follow-up experiment round (in progress)
+
+Baseline: PhosphorOS `0d64d57c`, SC64 `f5fc7fd`, accepted no-logo bootloader
+and full-duplex register-read MCU above. Final Fight is the comparison theme.
+Fresh console-off firmware backup matches the preceding full readback SHA256
+exactly. An attempted live backup failed its bootloader checksum and produced
+an empty file; it is not recovery evidence. No firmware is changed by backup.
+Evidence for this round lives in ignored `build/software-boot-round2/`.
+
+| Experiment | State / acceptance requirement |
+| --- | --- |
+| LZ4 windows 2, 4, 16, 32, 64 KiB versus 8 KiB | Exact loaded-image and full packaging checks pass; real N64 timing starts next |
+| Smaller established diagnostic formatter | Implementation and complete format compatibility under investigation |
+| Omit unused successful command result reads | Actual-function host equivalence passes; hardware comparison pending |
+| Conditional MCU configuration-register read | Matched GCC9 baseline reproduced; host equivalence passes; hardware pending |
+| USB status/pop full-duplex frames | Matched builds ready; FIFO/RTL correctness checks pending before hardware |
+| USB push batching | Independent matched build ready; FIFO/RTL checks pending before hardware |
+| Coalesce redundant pending root scan | Isolated implementation and lifecycle guards under preparation |
+| Module initialization attribution | Temporary profiler under preparation; changes depend on measured attribution |
+
+Only repeatable improvements passing their correctness gates become production
+commits. Each accepted performance experiment remains independently rollbackable;
+test infrastructure and documentation have separate commits. FPGA and MCU loader
+remain unchanged. Installed firmware currently remains the baseline. The original
+Ghosts'N Goblins theme must be restored after testing; no commits are pushed.
