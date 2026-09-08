@@ -4442,6 +4442,8 @@ FRESULT f_lseek (
 	FSIZE_t ifptr;
 #if FF_USE_FASTSEEK
 	DWORD cl, pcl, ncl, tcl, tlen, ulen;
+	FSIZE_t remaining;
+	int bounded;
 	DWORD *tbl;
 	LBA_t dsc;
 #endif
@@ -4461,12 +4463,20 @@ FRESULT f_lseek (
 			tbl = fp->cltbl;
 			tlen = *tbl++; ulen = 2;	/* Given table size and required table size */
 			cl = fp->obj.sclust;		/* Origin of the chain */
-			if (cl != 0) {
+			bounded = !(fp->flag & FA_WRITE);
+			remaining = fp->obj.objsize ? (fp->obj.objsize - 1) / ((FSIZE_t)fs->csize * SS(fs)) + 1 : 0;
+			if (cl != 0 && (!bounded || remaining)) {
 				do {
 					/* Get a fragment */
 					tcl = cl; ncl = 0; ulen += 2;	/* Top, length and used items */
 					do {
+						if (bounded && (cl < 2 || cl >= fs->n_fatent)) ABORT(fs, FR_INT_ERR);
 						pcl = cl; ncl++;
+						/* Read-only seeks cannot pass EOF, so their maps need no trailing allocation chain. */
+						if (bounded && --remaining == 0) {
+							cl = fs->n_fatent;
+							break;
+						}
 						cl = get_fat(&fp->obj, cl);
 						if (cl <= 1) ABORT(fs, FR_INT_ERR);
 						if (cl == 0xFFFFFFFF) ABORT(fs, FR_DISK_ERR);

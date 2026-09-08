@@ -143,6 +143,13 @@ When `CMD_ERROR` is set then **DATA0** register contains error code.
 | ------------ | ------ | ------ | ----------------------------------- |
 | `IDENTIFIER` | [31:0] | R      | Flashcart identifier (ASCII `SCv2`) |
 
+The identifier value is read-only. When configuration registers are unlocked,
+a write to its upper 16-bit half at `0x1FFF_000C` clears the pending button
+interrupt, regardless of the written value. A 32-bit write includes that half
+and has the same side effect; writing only the lower half does not clear it.
+This explains the register-level RW access in the summary table. The behavior
+is implemented by `REG_IDENTIFIER_H` in
+[`n64_cfg.sv`](../fw/rtl/n64/n64_cfg.sv).
 
 ---
 

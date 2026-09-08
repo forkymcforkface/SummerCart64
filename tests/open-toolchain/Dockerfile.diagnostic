@@ -1,0 +1,29 @@
+# Isolated experimental backend; every hard-cell diagnostic requires opt-in.
+# Build the pinned base with Dockerfile first and record both resulting image IDs.
+FROM sc64-open:7000
+COPY efb /opt/sc64-diagnostics/efb
+COPY oddr /opt/sc64-diagnostics/oddr
+COPY fifo /opt/sc64-diagnostics/fifo
+COPY constraints/allports /opt/sc64-diagnostics/constraints/allports
+COPY constraints/sysconfig /opt/sc64-diagnostics/constraints/sysconfig
+RUN test "$(git -C /src/nextpnr rev-parse HEAD)" = 8dbcee5c3c4415770b6fd06d5ccb2db89545b8ec && \
+    test "$(git -C /src/prjtrellis rev-parse HEAD)" = 3afe7b52b30f4b4417ee98f03016767a502006e3 && \
+    test "$(git -C /src/prjtrellis/database rev-parse HEAD)" = 015e0330630d7c238c0e4f2cdd9c8157eb78c54a && \
+    git -C /src/nextpnr diff --exit-code && \
+    git -C /src/prjtrellis diff --exit-code && \
+    git -C /src/prjtrellis/database diff --exit-code
+RUN /usr/bin/python3 -B /opt/sc64-diagnostics/efb/apply.py /src/nextpnr && \
+    /usr/bin/python3 -B /opt/sc64-diagnostics/oddr/apply.py /src/nextpnr && \
+    /usr/bin/python3 -B /opt/sc64-diagnostics/fifo/apply.py /src/nextpnr && \
+    /usr/bin/python3 -B /opt/sc64-diagnostics/constraints/allports/apply.py /src/nextpnr && \
+    /usr/bin/python3 -B /opt/sc64-diagnostics/constraints/sysconfig/apply.py /src/nextpnr && \
+    /usr/bin/python3 -B /opt/sc64-diagnostics/fifo/apply_trellis.py /src/prjtrellis && \
+    cmake --install /src/prjtrellis/libtrellis/build && \
+    touch /src/nextpnr/machxo2/facade_import.py && \
+    PRJTRELLIS_DB=/src/prjtrellis/database cmake --build /src/nextpnr/build -j2 && \
+    cmake --install /src/nextpnr/build
+ADD --checksum=sha256:552799a1d76cd177b9b4cc63a3e77823a3d2a6eb4ec006569288abeff28e1ff8 https://github.com/zachjs/sv2v/releases/download/v0.0.13/sv2v-Linux.zip /tmp/sv2v.zip
+RUN /usr/bin/python3 -m zipfile -e /tmp/sv2v.zip /opt && \
+    chmod +x /opt/sv2v-Linux/sv2v && \
+    ln -s /opt/sv2v-Linux/sv2v /usr/local/bin/sv2v && \
+    rm /tmp/sv2v.zip && sv2v --version

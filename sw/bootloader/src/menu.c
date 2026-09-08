@@ -55,6 +55,37 @@ static void fix_menu_file_size (FIL *fil) {
 }
 
 
+/* Read the complete menu through adjacent allocation extents. The temporary
+   map is detached before return; fragmented maps that do not fit use FatFs. */
+static FRESULT menu_read (FIL *file, UINT *bytes_read) {
+    if (f_size(file) > 0x04000000) return FR_INVALID_PARAMETER;
+    DWORD map[128];
+    map[0] = sizeof(map) / sizeof(map[0]);
+    file->cltbl = map;
+    FRESULT result = f_lseek(file, CREATE_LINKMAP);
+    file->cltbl = NULL;
+    if (result == FR_NOT_ENOUGH_CORE) {
+        return f_read(file, (void *)ROM_ADDRESS, f_size(file), bytes_read);
+    }
+    if (result != FR_OK) return result;
+    uint32_t remaining = (f_size(file) + 511) / 512;
+    uint32_t address = ROM_ADDRESS;
+    FATFS *fs = file->obj.fs;
+    for (unsigned i = 1; remaining && map[i]; i += 2) {
+        uint64_t run = (uint64_t)map[i] * fs->csize;
+        uint32_t count = run < remaining ? run : remaining;
+        uint64_t sector = (uint64_t)fs->database + (uint64_t)(map[i + 1] - 2) * fs->csize;
+        if (sector + count > 0x100000000ULL) return FR_INVALID_PARAMETER;
+        sc64_error_fatfs = sc64_sd_read_sectors((void *)address, sector, count);
+        if (sc64_error_fatfs != SC64_OK) return FR_DISK_ERR;
+        address += count * 512;
+        remaining -= count;
+    }
+    if (remaining) return FR_INT_ERR;
+    *bytes_read = f_size(file);
+    return FR_OK;
+}
+
 void menu_load (void) {
     sc64_error_t error;
     bool writeback_pending;
@@ -75,8 +106,9 @@ void menu_load (void) {
 
     FF_CHECK(f_mount(&fs, "", 1), "SD card initialize error");
     FF_CHECK(f_open(&fil, "sc64menu.n64", FA_READ), "Could not open menu executable (sc64menu.n64)");
+    FF_CHECK(f_size(&fil) > 0x04000000 ? FR_INVALID_PARAMETER : FR_OK, "Menu exceeds SDRAM capacity");
     fix_menu_file_size(&fil);
-    FF_CHECK(f_read(&fil, (void *) (ROM_ADDRESS), f_size(&fil), &bytes_read), "Could not read menu file");
+    FF_CHECK(menu_read(&fil, &bytes_read), "Could not read menu file");
     FF_CHECK((bytes_read != f_size(&fil)) ? FR_INT_ERR : FR_OK, "Read size is different than expected");
     FF_CHECK(f_close(&fil), "Could not close menu file");
     FF_CHECK(f_unmount(""), "Could not unmount drive");

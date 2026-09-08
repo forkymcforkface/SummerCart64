@@ -81,11 +81,11 @@ $(BUILD_DIR)/bootloader.elf: $(OBJS) N64.ld
 	@$(SIZE) -B -d $@
 	@$(OBJDUMP) -S $@ > $(BUILD_DIR)/bootloader.lst
 
-$(BUILD_DIR)/bootloader.bin: $(BUILD_DIR)/bootloader.elf
+$(BUILD_DIR)/bootloader.bin: $(BUILD_DIR)/bootloader.elf Makefile
 	@cp $< $<.stripped
 	@$(STRIP) -s $<.stripped
 	@cp $<.stripped $<.compressed
-	@$(N64_ELFCOMPRESS) -c 2 -o $(dir $<) $<.compressed
+	@$(N64_ELFCOMPRESS) -c 1 -o $(dir $<) $<.compressed
 	@$(N64_TOOL) --title "SC64 bootloader" --output $@ --align 256 $<.compressed
 
 all: $(BUILD_DIR)/bootloader.bin

@@ -15,12 +15,11 @@ uint8_t fpga_id_get (void) {
 }
 
 uint32_t fpga_reg_get (fpga_reg_t reg) {
-    fpga_cmd_t cmd = CMD_REG_READ;
+    uint8_t command[2] = { CMD_REG_READ, (uint8_t) reg };
     uint32_t value;
 
     hw_spi_start();
-    hw_spi_tx((uint8_t *) (&cmd), 1);
-    hw_spi_tx(&reg, 1);
+    hw_spi_tx(command, sizeof(command));
     hw_spi_rx((uint8_t *) (&value), 4);
     hw_spi_stop();
 
@@ -28,12 +27,27 @@ uint32_t fpga_reg_get (fpga_reg_t reg) {
 }
 
 void fpga_reg_set (fpga_reg_t reg, uint32_t value) {
-    fpga_cmd_t cmd = CMD_REG_WRITE;
+    uint8_t command[6] = {
+        CMD_REG_WRITE, (uint8_t) reg,
+        (uint8_t) value, (uint8_t) (value >> 8),
+        (uint8_t) (value >> 16), (uint8_t) (value >> 24)
+    };
 
     hw_spi_start();
-    hw_spi_tx((uint8_t *) (&cmd), 1);
-    hw_spi_tx(&reg, 1);
-    hw_spi_tx((uint8_t *) (&value), 4);
+    hw_spi_tx(command, sizeof(command));
+    hw_spi_stop();
+}
+
+/* The existing FPGA register protocol advances after each little-endian word.
+   Callers order trigger registers last; one CS frame contains the full group. */
+void fpga_reg_set_words (fpga_reg_t reg, const uint32_t *values, size_t count) {
+    uint8_t header[2] = { CMD_REG_WRITE, (uint8_t) reg };
+    if (count == 0) {
+        return;
+    }
+    hw_spi_start();
+    hw_spi_tx(header, sizeof(header));
+    hw_spi_tx((uint8_t *) values, count * sizeof(*values));
     hw_spi_stop();
 }
 

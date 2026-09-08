@@ -203,6 +203,7 @@ typedef enum {
 uint8_t fpga_id_get (void);
 uint32_t fpga_reg_get (fpga_reg_t reg);
 void fpga_reg_set (fpga_reg_t reg, uint32_t value);
+void fpga_reg_set_words (fpga_reg_t reg, const uint32_t *values, size_t count);
 void fpga_mem_read (uint32_t address, size_t length, uint8_t *buffer);
 void fpga_mem_write (uint32_t address, size_t length, uint8_t *buffer);
 void fpga_mem_copy (uint32_t src, uint32_t dst, size_t length);

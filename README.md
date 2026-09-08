@@ -3,6 +3,8 @@
 
 **For non-technical description of the SummerCart64, please head to the https://summercart64.dev website!**
 
+Downstream branch: [PhosphorOS boot optimizations](docs/phosphoros.md).
+
 ## Features
 
  - **ROM and Save Memory On-board**

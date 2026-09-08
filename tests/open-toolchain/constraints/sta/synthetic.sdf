@@ -1,0 +1,20 @@
+/* Artificial values provide analytically known annotation tests only. */
+(DELAYFILE
+  (SDFVERSION "3.0")
+  (DESIGN "top")
+  (DIVIDER /)
+  (TIMESCALE 1ns)
+  (CELL
+    (CELLTYPE "CLOCK_BUFFER") (INSTANCE phase)
+    (DELAY (ABSOLUTE (IOPATH A Y (0.2:0.2:0.2) (0.2:0.2:0.2))))
+  )
+  (CELL
+    (CELLTYPE "REG") (INSTANCE capture)
+    (DELAY (ABSOLUTE
+      (IOPATH (posedge CLK) Q (0.5:0.75:1.0) (0.5:0.75:1.0))))
+    (TIMINGCHECK
+      (SETUPHOLD (posedge D) (posedge CLK) (1:1:1) (0.25:0.25:0.25))
+      (SETUPHOLD (negedge D) (posedge CLK) (1:1:1) (0.25:0.25:0.25))
+    )
+  )
+)

@@ -253,7 +253,7 @@ Additionally, CIC emulation is enabled, 6102/7101 seed/checksum values are set a
 #### `arg0` (cic_params_0)
 | bits      | description                     |
 | --------- | ------------------------------- |
-| `[32:25]` | _Unused_                        |
+| `[31:25]` | _Unused_                        |
 | `[24]`    | Disable CIC                     |
 | `[23:16]` | CIC seed (IPL2 and IPL3 stages) |
 | `[15:0]`  | Checksum (upper 16 bits)        |
@@ -466,7 +466,7 @@ _This command does not send response data._
 _This command does not send `RSP`/`ERR` packet response!_
 
 This command notifies N64 that data is waiting to be acknowledged.
-If N64 side doesn't acknowledge data via [`m` **USB_READ**](./02_n64_commands.md#m-usb_read) N64 command within 1 second then data is flushed and [`G` **DATA_FLUSHED**](#asynchronous-packets) asynchronous packet is sent to the PC.
+If N64 side doesn't acknowledge data via [`m` **USB_READ**](./02_n64_commands.md#n64-commands) N64 command within 1 second then data is flushed and [`G` **DATA_FLUSHED**](#asynchronous-packets) asynchronous packet is sent to the PC.
 If N64 acknowledge the request, then data is written to the flashcart memory to address specified in [`m` **USB_READ**](./02_n64_commands.md) N64 command.
 
 ---
@@ -664,7 +664,7 @@ _This packet does not send additional data._
 
 **Data sent from the N64**
 
-This packet is sent when N64 command [**USB_WRITE**](./02_n64_commands.md#m-usb-write) is executed.
+This packet is sent when N64 command [**USB_WRITE**](./02_n64_commands.md#n64-commands) is executed.
 
 #### `data` (data)
 | offset | type                 | description |
@@ -679,7 +679,7 @@ This packet is sent when N64 command [**USB_WRITE**](./02_n64_commands.md#m-usb-
 
 **Data from [`U` **USB_WRITE**](#u-usb_write) USB command was discarded**
 
-This packet is sent only when data sent with USB command [`U` **USB_WRITE**](#u-usb_write) was not acknowledged by the N64 side with [`m` **USB_READ**](./02_n64_commands.md#m-usb_read) within 1 second time limit.
+This packet is sent only when data sent with USB command [`U` **USB_WRITE**](#u-usb_write) was not acknowledged by the N64 side with [`m` **USB_READ**](./02_n64_commands.md#n64-commands) within 1 second time limit.
 
 _This packet does not send additional data._
 
