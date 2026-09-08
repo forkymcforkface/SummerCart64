@@ -1375,3 +1375,12 @@ big-endian MIPS cases. They add 3072 bytes BSS and increase first-use table
 initialization; instruction counts are not hardware cycle results. No gain or
 retention is claimed before the hardware comparison. All variants retain the
 same CRC polynomial, seed and incremental-update behavior.
+
+The binary-index unbuffered hardware trial is rejected: control warm342/344 ms,
+candidate344/345/344 ms and restored344/344 ms. It does not improve readiness;
+the original buffered index stays in production. Cold423 ms is excluded.
+On user direction, further boot tuning is parked at the accepted approximately
+335 ms warm application readiness. The three qualified CRC variants have not
+been hardware tested and are parked, not rejected for performance. Research
+agents now focus on Final Fight background playback and UI frame time, with
+the accepted 51.3 FPS browse10 result as an explicit starting comparison.
