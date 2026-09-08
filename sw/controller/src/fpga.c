@@ -15,15 +15,15 @@ uint8_t fpga_id_get (void) {
 }
 
 uint32_t fpga_reg_get (fpga_reg_t reg) {
-    uint8_t command[2] = { CMD_REG_READ, (uint8_t) reg };
-    uint32_t value;
+    uint8_t command[6] = { CMD_REG_READ, (uint8_t) reg, 0, 0, 0, 0 };
+    uint8_t response[6];
 
     hw_spi_start();
-    hw_spi_tx(command, sizeof(command));
-    hw_spi_rx((uint8_t *) (&value), 4);
+    hw_spi_transfer(command, response, sizeof(command));
     hw_spi_stop();
 
-    return value;
+    return (uint32_t) response[2] | ((uint32_t) response[3] << 8) |
+        ((uint32_t) response[4] << 16) | ((uint32_t) response[5] << 24);
 }
 
 void fpga_reg_set (fpga_reg_t reg, uint32_t value) {

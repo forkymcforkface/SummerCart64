@@ -285,6 +285,24 @@ void hw_spi_stop (void) {
     hw_gpio_set(GPIO_ID_SPI_CS);
 }
 
+/* Full-duplex DMA owns separate TX/RX buffers until both channels finish.
+   The caller owns CS and waits for SPI not-busy before ending its frame. */
+void hw_spi_transfer (uint8_t *tx, uint8_t *rx, int length) {
+    DMA1_Channel1->CNDTR = length;
+    DMA1_Channel2->CNDTR = length;
+
+    DMA1_Channel1->CMAR = (uint32_t) rx;
+    DMA1_Channel1->CCR = (DMA_CCR_MINC | DMA_CCR_EN);
+
+    DMA1_Channel2->CMAR = (uint32_t) tx;
+    DMA1_Channel2->CCR = (DMA_CCR_MINC | DMA_CCR_DIR | DMA_CCR_EN);
+
+    while (DMA1_Channel1->CNDTR || DMA1_Channel2->CNDTR);
+
+    DMA1_Channel1->CCR = 0;
+    DMA1_Channel2->CCR = 0;
+}
+
 void hw_spi_rx (uint8_t *data, int length) {
     volatile uint8_t dummy = 0x00;
 

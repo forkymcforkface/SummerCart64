@@ -69,6 +69,7 @@ void hw_uart_write_wait_busy (void);
 
 void hw_spi_start (void);
 void hw_spi_stop (void);
+void hw_spi_transfer (uint8_t *tx, uint8_t *rx, int length);
 void hw_spi_rx (uint8_t *data, int length);
 void hw_spi_tx (uint8_t *data, int length);
 
