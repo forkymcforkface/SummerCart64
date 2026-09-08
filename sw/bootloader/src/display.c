@@ -1,4 +1,5 @@
-#include <stdio.h>
+#define NANOPRINTF_IMPLEMENTATION
+#include "vendor/nanoprintf/config.h"
 #include "display.h"
 #include "font.h"
 #include "init.h"
@@ -163,7 +164,7 @@ bool display_ready (void) {
 void display_vprintf (const char *fmt, va_list args) {
     char line[256];
 
-    vsniprintf(line, sizeof(line), fmt, args);
+    npf_vsnprintf(line, sizeof(line), fmt, args);
     display_draw_string(line);
 }
 
