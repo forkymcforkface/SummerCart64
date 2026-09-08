@@ -176,3 +176,14 @@ language initialization at about 22.4 ms and game-database initialization at
 13.7 ms. A narrower database I/O probe is ready; these measurements are not yet
 new optimizations. Native controller initialization has no arbitrary wait that
 can be removed while preserving its first-ready-input contract.
+
+The subsequent exact-root artifact correction passes hardware verification.
+Uncontaminated filename copying and CFG argument-pair MCU reads fail to show a
+repeatable gain and are rejected; accepted ff00d9ed MCU firmware is restored.
+Browser deferral is accepted in root e6b69f79 after the full matrix, 39 host
+contexts, 42 N64 cases, standard browse10 and repeated theme lifecycle checks.
+Warm Final Fight readiness is 335 ms versus matched 339–342 ms controls.
+Binary-index unbuffered reads and three CRC slicing-by-four forms remain
+hardware trials. Config arena reuse has no narrow safe implementation without
+additional I/O, excessive allocation or a new ownership mechanism; it is not a
+qualified candidate. See boot-testing.md for the evidence and test boundaries.

@@ -1327,3 +1327,51 @@ loader, FPGA and formatter. Physical cart-button debounce is not measured;
 no physical-button qualification or broad firmware-safety claim is inferred
 from the protocol tests. The accepted firmware is restored and no candidate
 firmware source is retained in production.
+
+### Verified browser deferral and remaining software trials
+
+Root e6b69f79 retains initial browser-build deferral. Matched current-source
+Final Fight baseline warm boots are 339/342 ms, candidate 335/335/335 ms,
+and restored controls 339/341 ms. The initial baseline 417 ms cold cache miss
+is excluded from the warm comparison. These are application boot_ms readings,
+not wall time from console power. Music starts about 20–21 ms after readiness.
+Candidate ROM SHA256 is
+5b5d5b1cfa407f80df06daa459767e3986b0984e4f407e13800d7bf9a5c0bf1b.
+The matched baseline is 001b336bcba22593cf4d8f0e7c2b9bcfc5d80e77d57d8054bed47fa1fdd1ceb4.
+Both packed payloads match their linked ELF and differ only in the qualified
+runtime change and its relocations. The full production matrix passes.
+
+All 39 host catalog contexts and 42 N64 view cases pass. Host evidence includes
+real media and collection/dialog entry contexts; earlier incomplete fixture
+explorations are preserved but do not count as coverage. The permanent focused
+gate models lower drop/list boundaries and does not prove real row selection.
+The unchanged browse10-nav epoch measures baseline 50.7 FPS, p50=19/p99=36 ms,
+candidate 51.3 FPS, p50=19/p99=34 ms, with zero audio and producer overruns.
+GIF progress is baseline frame494/tick599/drop106 and candidate501/599/100.
+Repeated Ghosts'N Goblins/Final Fight theme switches leave Final Fight settled
+free memory 917852 then 917916 bytes and zero retired GPU bytes. Evidence lives
+under E:/phosphor-boot-round3/hardware and core-view-defer; host consolidated
+coverage is host-regression-v5/coverage-map.json. No full-view gate is required
+for the remaining boot-only candidates unless their scope changes.
+
+The uncontaminated filename-copy trial is rejected: 341/339/338 ms versus
+restored exact-root 336/336 ms. Both original filename and cart-key formatters
+remain in production. The corrected root artifact and accepted browser artifact
+contain no temporary Count instrumentation.
+
+Language cache hits measure 23129/23263 us with detailed instrumentation:
+identity 3318/3403, cache 19640/19691, header read 4081/4133,
+index read 712/710, arena read 6833/6836, header CRC 215, index CRC 1233/1229,
+arena CRC 2285/2286 and validation 3546/3545 us. Nested scopes are not additive.
+Database detail totals 13849/13841 us: DAT first read 3148/3147 and end seek
+2471/2472; index header 1059/1169, fence seek 1163/1120 and fence read
+2317/2332 us. DAT end validation remains necessary for damaged-chain errors.
+
+The binary-index unbuffered candidate is now under real-cart comparison after
+1152 actual-owner cases, two precise negatives and packed-artifact verification.
+Three CRC slicing-by-four forms are queued: assembled-word, direct indexing,
+and two direct-index groups per loop. Each passes sanitizer and 1316 linked
+big-endian MIPS cases. They add 3072 bytes BSS and increase first-use table
+initialization; instruction counts are not hardware cycle results. No gain or
+retention is claimed before the hardware comparison. All variants retain the
+same CRC polynomial, seed and incremental-update behavior.
