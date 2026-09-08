@@ -119,3 +119,21 @@ upstream candidates are a qualified build/test path and, if needed, separately
 accepted portable RTL inference workarounds. The existing RAM limitation is
 in the open mapping flow, not a demonstrated SC64 firmware defect. The GIF
 accelerator is a separate feature proposal.
+
+## Firmware address-bound validation follow-up (2026-09-08)
+
+Actual-source host testing finds that cfg_translate_address in
+sw/controller/src/cfg.c can accept an oversized range after unsigned32-bit
+address+length wrap. The fixed BRAM address0x1FFE0000 with SD count0x7fffff
+passes the existing count guard but wraps its byte-range endpoint. Current
+libcart does not send this request: its DRAM reads are bounded to16sectors.
+No malformed legacy transfer is sent to the cart during testing.
+
+This is a separate upstream correctness candidate: use checked addition or
+subtraction bounds after validating each mapped start address, with tests for
+all aliases, zero lengths, exact endpoints and wraparound. It is not yet fixed
+or hardware-qualified here. The private READ_AT experiment independently bounds
+its fixed8KiB buffer and intentionally rejects these malformed requests; it
+leaves legacy commands unchanged. Source evidence and independent review live
+under E:/phosphor-boot-round3/read-at-atomic/legacy-translation-gap.md and
+E:/phosphor-boot-round3/gap-review/read-at-final-qualification-review.md.

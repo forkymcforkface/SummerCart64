@@ -899,3 +899,65 @@ CI8 master4.569/7.954/4.798/2.102ms. This is attribution-only. Agents investigat
 native loading and atlas construction, plus loader cache-flush work; no candidate
 is accepted from these measurements. Heap-log, bounded ROMPAK and sector-padding
 comparisons remain in the serialized parent-owned hardware queue.
+
+### Integrated results and native-font follow-up
+
+The current measured phase sums (SD load + IPL3-to-platform + frontend ready)
+are556.319ms for configuration indexing, against570.179/572.785ms bracketing
+baselines. They still exclude platform_init and are not power-to-picture.
+Individual utils/heap O2 trials improve those sums by7.419/8.542ms, but the
+accepted configuration index removes their demonstrated integrated benefit:
+
+| Integrated production trial | Warm frontend ready ms | Disposition |
+| --- | ---: | --- |
+| Config index baseline A | 377 | Accepted source baseline |
+| Index plus utils O2 | 377 (earlier376) | Rejected: no clear added gain |
+| Index plus heap O2 | 380 | Rejected: no clear added gain |
+| Restored config index B | 380 (first warm377) | Baseline variation, not a compiler gain |
+
+Both compiler flags are removed from the integration source. Their isolated
+instruction-model and old-baseline gains do not justify stacking them.
+Heap-log consolidation reduces its measured platform interval from about
+101418 to50713 Count ticks (~1.08ms), with unchanged heap work. This is a local
+positive only; no integrated whole-boot acceptance or commit yet.
+
+Bounded ROMPAK DMA search is rejected: original28758/28759ticks vs
+candidate36207/36183ticks (~0.61 vs0.77ms), with candidate entry Count also
+higher. ROM/TOC cookies and every SD download are verified. No code retained.
+
+| Paired native sprite / atlas trial | Warm ready ms | Assets ms | Status |
+| --- | ---: | ---: | --- |
+| Native baseline A | 389 | 117 | Control |
+| Loose sprite stdio16KiB | 380,379 | 107 | Positive, slower than unbuffered |
+| Loose sprite unbuffered | 376,377 | 103 | Best candidate; current-index integration pending |
+| Restored native baseline B | 392,391 | 118,117 | Control |
+| Indexed atlas map removal | 387,387 | 112 | Positive; integrated/resource qualification pending |
+| Restored atlas baseline | 391,392 | 117 | Control |
+
+All native pairs use the exact fixed d68 display/cache identity,622592-byte
+ROMs, Final Fight, original MCU/FPGA and retained formatter. The full current
+index+unbuffered production matrix passes; default actual native-owner64cases
+plus the exact ASan double-free negative pass. Root e3e0a9c1 commits only that
+test gate. Candidate clean ROM is478f4d609b92668716334c3d72962167275e47432b73cc8a7834cb10445def04;
+production hardware and persistence deployment are still pending.
+
+All four actual installed font sprites are downloaded read-only and confirmed
+CI8/v6. Exact indexed-plane/palette output comparisons cover41184pixels plus
+4000randomized cases and the reachable255-visible-colour boundary. More than
+255visible colours is impossible for valid CI8 because the top-left source
+index is transparent. Source-reuse follow-up has a separate memory tradeoff:
+it retains native sprite overhead; no retained-memory reduction is claimed.
+
+Old-MCU READ_AT qualification reports13checks, zero failures, unsupported
+capability and only legacy reads. All data and guard cases complete, including
+1/16/33sectors at start/end and aligned/bounce buffers. The initial standalone
+capture also logs a debug-data flush: the temporary harness accidentally pipes
+power-on status text into debug stdin. Parent corrects that redirection and
+queues a clean repeat. This is not an SD-read failure, but the capture anomaly
+is not hidden. No READ_AT firmware flash has occurred.
+
+Loader-only whole-cache experiment passes source ordering/model negatives and
+independent packaging review. Its signed stage1 is byte-identical to upstream;
+canonical packing moves TOC0x1930 to0x1980 without changing executable payloads.
+Legitimate generated cookies remain intact. Current Count hardware is underway;
+no loader performance result or acceptance yet. No FPGA changes are involved.
