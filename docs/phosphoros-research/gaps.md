@@ -231,3 +231,17 @@ have isolated correctness gates and queued ROMs, but no hardware acceptance.
 The naive wide-copy v1 is rejected for increased modeled instruction count.
 PDSB next-block lookahead is being qualified separately against the newly
 accepted main baseline. See ui-testing.md for exact artifacts and results.
+
+## Final closure — 2026-09-08
+
+The final queue is closed. PDSB next-block lookahead is retained in PhosphorOS
+main e07e5c25, with regression coverage in a06cb2ce. Mixed-atlas rejection,
+raw rectangle submission and the active-viz tap shortcut show no repeatable
+hardware gain. The private wide-copy decoder's standalone gain disappears
+when added to lookahead and is rejected. Earlier pager, complete-input decoder,
+sound admission and boot improvements remain retained. See ui-testing.md for
+all paired results and accepted-commit-audit.md for history reconciliation.
+No FPGA change is part of this round. Proof-only leads remain unaccepted and
+are not active tasks. Publish the tested vendor tree on
+phosphoros-verified-20260908, referenced by PhosphorOS main; vendor upstream-main
+integration requires separate firmware validation and is not performed here.

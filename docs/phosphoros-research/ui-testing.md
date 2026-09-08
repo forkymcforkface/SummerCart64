@@ -1540,3 +1540,70 @@ Independent gate reruns are in pager-parent-review, glyph-tiles-parent-review
 and text-source-parent-review. Hardware summaries are hardware/pager-snes-results.json
 and hardware/tiles-snes-results.json; view and image evidence uses the pager-*
 and screenshot_1788884469_1.png / screenshot_1788884575_1.png files there.
+
+## Final frame-time round closure — 2026-09-08
+
+Research is closed at the user's request. Five remaining candidates were tested
+on real N64 hardware with Final Fight. Navigation comparisons use the unchanged
+supplemental SNES893 sequence, baseline/candidate/candidate/baseline; they do not
+replace the canonical browse10-nav epoch. Each paired build has matching literal
+metadata and differs only by its candidate. All captures below have zero audio
+underruns and producer overruns. Navigation captures also have zero GIF slice
+overruns.
+
+| Candidate | Baseline FPS | Candidate FPS | Baseline / candidate p99 ms | Final decision |
+| --- | --- | --- | --- | --- |
+| Mixed-atlas early source rejection | 58.859 / 58.553 | 58.612 / 58.994 | 32,32 / 32,31 | Reject: no repeatable gain |
+| PDSB next-block lookahead | 58.541 / 58.547 | 59.376 / 59.482 | 31,32 / 27,28 | Retain: main e07e5c25 |
+| Private wide-copy decoder, standalone | 58.465 / 58.682 | 59.341 / 58.906 | 31,26 / 31,30 | Superseded by final-stack comparison |
+| Wide-copy added to lookahead | 59.523 / 59.617 | 59.411 / 59.529 | 27,29 / 27,29 | Reject: standalone gain does not survive |
+| Raw glyph rectangle submission | 58.500 / 59.287 | 59.041 / 58.495 | 32,30 / 31,31 | Reject: overlapping results |
+| Active visualizer tap threshold | 59.8 / 59.8 | 59.8 / 59.8 | 20,20 / 20,20 | Reject: no repeatable overall gain |
+
+Tap uses the existing viz_perf.py bars-mode capture, discovered from the runtime
+registry, with ten-second windows and the Final Fight playlist. It is not a
+browser optimization. Parent review corrects the proposed metric: sound_poll
+calls snd_pump before rtk_frame_begin, so the later PERF_SND_PUMP bracket misses
+most steady tap work. Overall elapsed time per frame minus framebuffer wait is
+6585/9017 us baseline and 7549/7563 candidate. These noisy residuals are not pure
+CPU time and establish neither a repeatable gain nor a regression.
+
+Lookahead retains the existing two-block ring, 32 KiB PDSB slice, consumer-first
+priority, DMA exclusion and completion fences. PDS9 keeps its 128 KiB request.
+GIF delivery improves from 567/570 frames to 578/579 in the matched windows;
+ticks remain 599/599 versus 599/598, and drops fall from 31/28 to 20/19. Candidate
+single-frame maxima are 46/43 ms versus 37/37 despite improved p99; this is not a
+claim that every tail improves. The final canonical browse10-nav passes at
+57.0 FPS, p50 18 ms, p99 30 ms, maximum 33 ms, with music playing, 537 GIF frames,
+598 ticks, 63 drops and zero faults. Settled free heap is 965452 bytes with no
+retired resources. This final operational check is not another matched gain.
+
+The production test commit a06cb2ce extends the existing GIF gate with 252 actual
+caller readiness cases, 19 PDSB/PDS9 helper/crossing cases and 192 actual cart-owner
+cases. Baseline and candidate pass; precise missing-completion and DMA-exclusion
+mutants fail, and the candidate's missing-lookahead mutant fails. Parent reruns
+execute the actual integrated root source. Canonical lint and all three cart
+products pass. Initial isolated builds fail for missing release/test fixtures;
+those failures remain excluded, and the successful reruns use the qualified
+171-input fixture set with recorded hashes. Decoder and rectangle functional
+proofs are not hardware speed claims.
+
+Parent review also catches a global c1 compression override on the rejected
+wide candidate's EverDrive packages. Corrected default c2 packaging passes,
+with unchanged linked ELFs and exact decompressed payload comparisons. The
+SC64 candidate used for hardware remains byte-identical throughout. No such
+packaging override enters production.
+
+Evidence under E:/phosphor-boot-round3: hardware/{text,lookahead,wide,rawrect}-snes-results.json,
+hardware/wide-stack-snes-results.json, hardware/tap-bars-*.csv,
+hardware/final-lookahead-browse10.log and its transcript, plus the named candidate
+folders and parent rerun folders. The final accepted SD ROM is
+a8a65778bd20a76d3ed38502ddb34f084126911fd3020fdf3d745ff83c760558.
+SD readback is byte-identical; the same ROM is uploaded to SDRAM before reset.
+Final Fight is retained and the console is off. Firmware and FPGA are unchanged.
+
+The accepted-commit-audit.md records all 21 earlier retained root optimizations,
+accepted vendor changes and reconciliation of 35 old agent commits. Lookahead
+is the additional retained win. No accepted optimization is left only in a
+research folder. Inline-length, cache-tail and other proof-only work remain
+unaccepted; no further experiments are queued in this closed round.
