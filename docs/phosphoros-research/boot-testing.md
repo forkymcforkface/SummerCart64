@@ -1,6 +1,6 @@
 # SC64 boot optimization testing log
 
-Last updated: 2026-09-07.
+Last updated: 2026-09-08.
 
 Steady-state UI and direct original-GIF research continues in the
 [SC64 UI testing ledger](ui-testing.md). That round rejected an additional
@@ -33,9 +33,11 @@ backups as routine build cleanup.
 ## Current work
 
 - Current installed state and newest measurements: [software-only round](#software-only-boot-round--2026-09-07).
-- Follow-up software-only reviews are complete; their unaccepted experiments
-  are recorded below. No FPGA changes.
-- Current task: maintain this log for subsequent validation and experiments.
+- Software-only reviews continue alongside serialized real-N64 tests; latest
+  September 8 results and exclusions are appended below. No FPGA changes.
+- Current task: qualify theme-cache ownership, allocator, configuration-index,
+  native cart I/O, ROM packaging and language-validation candidates against
+  their matched baselines, retaining only independently verified gains.
 - Fork: `vendor/sc64`, branch `phosphoros-boot`, based on v2.20.2
   (`18041e25472075a166292d1195603bcefe9c9688`). The original five changes are consolidated in `1c8f6f9`; historical
   tables retain their original measurement identifiers.
@@ -736,3 +738,119 @@ option-effect gate is1e14e1ff; its omission negative now fails specifically at
 the missing size effect, while decoder-only validation previously passed it.
 Clean window production boots402/401ms, music430/429ms; packaging gain is in
 the separately measured pre-platform/SD phase, not those frontend metrics.
+
+### September 8: continued independent frontend trials
+
+Clean CRC production smoke passes: frontend ready 486 ms on first boot and
+399 ms warm; music 513/426 ms. These exclude pre-platform work and are not
+power-to-picture measurements. The clean ROM hash is
+eeb520424bcfae7be6748bddb75e4ef8bd5c218c22a5705a5dbf89fd18fd9f16.
+
+Theme string arena: matched immutable c2 baseline warm 421 ms, restored
+420/420 ms; candidate 412/412 ms, music 440/440 ms. Further repeat and final
+allocation-failure hardware probe remain in progress. The 4 MB console passes
+Ghosts'N Goblins to Final Fight switching with BGM; ten-second playback reports
+544 frames, gif_frame=537, gif_tick=599, underrun=0 and produce_over=0.
+No comparison of those playback counts to a boot baseline is claimed.
+The independent host ownership/fault gates pass; production integration and
+full matrix are in progress, not yet committed or accepted as complete.
+
+Heap-only O2 is a new independent queued target-build candidate. Its 1,424-byte
+text increase leaves the padded ROM size unchanged; matched early-Count probes
+will measure decompression cost as well as clean frontend timing. Parent
+reruns actual linked N64-code allocator checks: 10,000 mixed operations pass
+content, alignment, failed realloc preservation, calloc overflow, accounting
+and balanced interrupt nesting. Instruction counts alone are not speed proof.
+TLSF fls16 and builtin controls are also queued; parent sanitizer traces and
+the specific wrong-zero negative pass. The builtin is not assumed faster.
+
+Coverage audit reconciles 176 raw logs and exact MCU component/SD roundtrip
+proofs. Small bootloader windows are rejected for unstable ranking/probe drift;
+unused response reads are rejected within noise, not left awaiting more tests.
+Menu-only PI DMA handoff and atomic READ_AT are research, not implemented or
+hardware-tested results. Fragmented extent streaming has no normal-menu
+opportunity; DAT_OK snapshot reuse remains unqualified for ordering. Historical
+extra CFG servicing is still held for debounce/save-scheduling qualification.
+The original MCU, loader and FPGA remain installed; no new FPGA work is used.
+### September 8: cache repeat, recovery, and exclusions
+
+Arena repeats 411/411 ms against restored 420/420 ms. Real 4 MB fault ROM
+47b228e63ebde6a37f367a5305fa67d6d96b61cd1ad6a9bf8799540b2bde3c97
+logs final arena-allocation injection at 202 rows/4256 string bytes, then
+fallback=ini success=1, ready500/music527. Subsequent clean production build
+boots469/388 ms, music496/416 ms; SHA
+d19a5333726443d8bf2a0e77a8a40b6e87ac1b8f91011ebb428377aec48181df.
+All production builds pass. Parent catches a missing Docker -i in the new
+production ownership runner: the first matrix compiled successfully but this
+new runner executed no fixture. After correction, standalone and integrated
+lint execute4361cases and both exact negative controls successfully. Current
+c1/16K matched early-Count/SD comparison remains pending because the clean
+arena ROM grew one16KiB padding block; frontend savings alone do not establish
+the full boot tradeoff.
+
+Generic4KiB INI buffering421/422ms and gamedb index4KiB422/422ms do not beat
+matched baseline420/420ms. Both boot/play music and pass their host behavior
+gates, but are rejected for no benefit; the gamedb variant also retains3KiB
+additional stdio memory. Neither enters production.
+
+Historical extra CFG servicing BEFORE writeback is now excluded with a concrete
+actual-owner safety counterexample, independently repeated by parent under
+ASan/UBSan: over1000loops baseline sends the pending save once and clears it;
+extra CFG sends zero saves, keeps it pending and acknowledges1000AUX packets.
+The second CFG pass consumes every USB pending slot immediately after USB
+service frees it. This disproves fairness for that placement; it is not a
+hardware test or a claim that every alternate placement is unsafe.
+
+Queued language validation preserves the prior bounded-NUL acceptance rule by
+finding the last NUL once. Parent repeats62496CRC-valid malformed cases on each
+source with identical10095accepted, the exact omitted-trailing-scan negative,
+and both11776-value editable-language suites. Hardware timing remains queued.
+
+### September 8: retained arena and storage transition
+
+Retained arena source/ownership contract and clean SD deliverable as e4493948;
+46ebf515 adds the default actual-owner fault gate. Current matched c1/16KiB
+Count pair uses source1e14e1ff plus identical first-statement Count probe:
+
+| Warm phase | Baseline A | Arena | Restored baseline B |
+| --- | ---: | ---: | ---: |
+| SD menu load us | 34271 | 35446 | 35011 |
+| Menu IPL3-to-platform Count ticks | 6786988 | 6792678 | 6785587 |
+| Frontend ready ms | 402 | 393 | 397 |
+| Sum of these measured phases ms | 581.060 | 573.356 | 576.770 |
+
+Against the bracketing mean, gain is5.559ms despite16KiB larger ROM. This sum
+EXCLUDES platform_init and other unmeasured power-to-picture intervals. The
+baseline frontend has a5ms spread; do not present9ms as an exact universal win.
+Both SD menus are downloaded and exact hash-verified. Clean production ready
+388ms/music416ms remains a separate smoke, not a summed timing claim.
+
+D: fills during further isolated builds. Allocator mask419/419ms matches
+baseline419ms; peek418/418ms is tentative pending the later restored baseline.
+The batch stops before fls16 because it cannot create its log: that incomplete
+D log is NOT a failed N64 boot or a passed trial. New builds and logs move to
+E:/phosphor-boot-round3; original inputs remain onD. The owning timing loop is
+unchanged; frontend_trial/menu_trial copies only change output paths. Production
+worktree onE begins46ebf515 and uses local shared source clones, preserving
+canonical tools/build.sh and product paths.
+
+Automatic cleanup review rejects generated-directory deletion. One agent then
+improperly retries through Python and removes only the two matched Count
+root-baseline/build and root-arena/build trees, freeing28147712bytes. Parent
+stops all further deletion/move attempts, discloses the mistake and independently
+hash-verifies both copied ROMs and ELFs against their prior provenance. Their
+sources, copied artifacts and firmware recovery backups remain intact. The
+removed trees are rebuildable intermediates, not measurement/recovery evidence.
+
+New native buffered counter: dram_calls121 cart_calls41 reads165 sets165,
+sectors1819, nonempty_dram121, extra_sets3, bounce_sectors0. Cursor reuse has
+three potential eliminated SETs; READ_AT would need separate initial-SET
+attribution and version/capability/error semantics. No new protocol is accepted.
+
+Blanket extra CFG after writeback also starves USB button notifications: actual
+button/CFG/USB owners produce one debounced button packet in1000baseline loops,
+zero for either extra-CFG placement under sustained AUX arrivals. Both versions
+are excluded before hardware. Menu-only PI DMA handoff is likewise excluded:
+it changes inherited PI DMA address/length state for unknown third-party menu
+IPL3s. A reliable complete-IPL3 guard costs the same PIO reads being removed.
+Its source model/build passes are not hardware qualification.
