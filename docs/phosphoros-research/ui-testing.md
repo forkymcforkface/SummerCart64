@@ -1324,3 +1324,22 @@ with1717 320x240 CI8 frames. The following candidates are under qualification:
 | Next-song prefetch/frame scheduling | Source review ongoing; no candidate retained. Current mixer/RSP ordering, source completion and audio refill priority remain protected. |
 
 All generated proofs and matched artifacts remain under E:/phosphor-boot-round3.
+
+### PDSB boundary ABAB result
+
+The matched clean boundary experiment is rejected for frame-time retention.
+Baseline35a52322 measures50.4/50.6 FPS, p50 19/19 and p99 33/32 ms;
+candidate d5350dc2 measures50.4/50.3 FPS, p50 19/19 and p99 32/33 ms.
+GIF delivery rises from493/495 to498/498 frames per approximately599 ticks,
+but no repeatable UI frame-time or tail improvement is demonstrated. All four
+captures have zero audio underruns and producer overruns, valid BGM and no
+retired GPU bytes. Hardware logs are fps-boundary-{base,candidate}{1,2}-browse10.log.
+No candidate source or binary replaces production. The small transfer saving
+remains documented, rather than being represented as a route to60 FPS.
+
+Parent rerun independently passes the complete-input decoder's1717-record
+bounded-reference/assembled-MIPS comparison. Its preliminary broader route also
+covered PDS9; independent review requires a PDSB-only route before hardware.
+The preliminary pair is unqualified and not tested. A nested sound diagnostic
+is queued to separate sound_poll's own mixer call from next-song prefetch;
+the later frame-start mixer scope cannot establish that earlier call's cost.
