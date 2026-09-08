@@ -465,3 +465,69 @@ Six table/header interruption boundaries reject it under the new theme with
 the table-first candidate; the original header-first candidate wrongly accepts
 it after each interrupted table-clear boundary. The safe candidate remains
 unapplied pending hardware A/B.
+
+### Full-menu compression measurement
+
+USB-read and USB-push are not retained: matching overwrite transfers remove
+the apparent upload gain (baseline 533/546 ms, read candidate 533 ms, push
+530/529 ms). Download results overlap at 394-406 ms. Ready 422/422 ms read,
+423/422 ms push, restored 422/423 ms; warm menu 27.475/27.536 ms candidates
+versus 27.375 ms restored. Both configuration and exact 1 MiB transfer gates
+pass; restored/push playback smoke reports zero underrun/producer overruns.
+Original MCU is restored and exact-readback verified before menu comparisons.
+
+Full-menu c2 timing exposes a substantial phase outside frontend boot_ms:
+273.630/273.652 ms from menu IPL3 Count reset to platform_init. Warm SD load
+is 27.384 ms, sum 301.036 ms. Same-ELF c1 measures 145.972/145.956 ms; warm
+SD load 36.428 ms, sum 182.384 ms: initial net reduction 118.653 ms. Loaded
+ELF segments are byte-identical, same metadata/cache stamp and assets. Both
+run Final Fight with music. C2 restoration and c0 control are pending before
+production selection. These sums exclude later platform setup and frontend
+boot_ms and are not claimed as total power-to-picture measurements.
+
+Physical SD original menu is backed up and SHA256-verified against original
+3ed181a976cee2f272f08e1a7bf510bbd6d596b947e326aace83df0723e94784. Each
+experimental SD upload is downloaded and hash checked. Current SD contains a
+temporary timing menu; final clean menu and normal SD boot must be restored.
+
+### Accepted full-menu LZ4 packaging
+
+PhosphorOS `19fd308f` selects stock compression level 1 for SC64 only; explicit
+overrides and other carts retain their previous behavior. C2 restoration repeats
+273.646 ms pre-platform, confirming the earlier 273.630/273.652 ms results.
+C0 control is slower than c1: 209.475 ms pre-platform + 55.108 ms warm SD =
+264.583 ms. C0 also overlaps the resident cheatsearch mailbox and approaches
+the IGR 1 MiB copy bound, so it is not a production candidate. No size gate,
+resident layout or toolchain patch is introduced.
+
+Clean canonical N64 build passes at 638,976 bytes, SHA256
+1a25ea3df56352de63a8892aca9ed75a7926ce3e13a0411c3b7e40fa53c8ec2e.
+ELF has no temporary attribution markers. Persistent SD+SDRAM deployment,
+reset and downloaded SD hash verification pass. Clean boot is 513 ms cold /
+414 ms warm; music 541/442 ms. Playback smoke: 568 frames/10,010 ms, zero
+underrun/producer overruns, GIF tick 599/frame 563/drop 35. Scene-dependent
+playback is only a health check, not an FPS improvement claim. C1 clean ROM
+is preserved in round3/c1-production-clean.n64 while subsequent isolated
+experiments continue.
+
+### Additional attributed costs
+
+Platform-only diagnostic: all constructors together 0.912 ms; FAT mount
+5.616 ms; synchronous RTC 3.658 ms. An RTC overlap candidate starts detection
+after card initialization and preserves the original readiness barrier. It
+is source-tested, including a failing omitted-barrier control, but hardware
+comparison remains pending. Other platform intervals are preserved in
+round3/platform-attribution-boot1.log; diagnostic total is not a baseline.
+
+Cache diagnostic warm: language hit, identity 4 ms/read-validation 27 ms;
+theme hit, identity 8 ms/read-validation 31 ms. Cart open 11 ms with one full
+directory flush, no format/theme reset. Cold has 18 ms initial cart open, four
+full directory flushes and two formats. The safe cache-directory candidate is
+undergoing baseline/candidate/baseline hardware comparisons.
+
+Config/gamedb diagnostic warm: config 42,324 us total; file open 2,422 us,
+reads 9,728 us, parsing/callbacks 28,259 us; nested key insertion 18,353 us
+for 206 unique rows. Gamedb 15,018 us total: DAT 6,933, index header 2,114,
+fences 3,854, user overlay 521, migration 3 us. Per-call clock overhead and
+unclassified work mean attributed subtotals are not forced to sum exactly.
+Config lookup is now a measured lead; both required startup owners remain eager.
