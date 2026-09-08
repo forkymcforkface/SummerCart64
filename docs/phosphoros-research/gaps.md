@@ -192,23 +192,33 @@ qualified candidate. See boot-testing.md for the evidence and test boundaries.
 ## Frame-time follow-up status (2026-09-08)
 
 The PDSB complete-input decoder is accepted in root 89bacff4, with default gate
-rootccf570af and documentation rootf9dc5119. Clean Final Fight browse10-nav ABBA
-improves 51.4/51.4 to52.3/52.0 FPS; all 42 N64 view cases and audio checks pass.
+root ccf570af and documentation root f9dc5119. Clean Final Fight browse10-nav ABBA
+improves 51.4/51.4 to 52.3/52.0 FPS; all 42 N64 view cases and audio checks pass.
 The final integrated ROM is byte-identical to the qualified candidate,
 SHA256 2f38fc013bc18cb92629d28115a40cfa86c2497f0d2b7ef9ba12b03d3e30fe1a.
 The existing N64 GIF owner generates a pinned private specialization; stock
 SDK/PDS9 behavior remains intact. Actual-record, assembled-MIPS, caller-readiness,
 negative-control, cart-build and lint evidence is indexed in ui-testing.md.
 
-Independent sound-prefetch ABBA improves 50.6/50.6 to53.5/53.9 FPS, p99 35/35 to
-35/34 ms, with zero audio faults. Main integration and combined-stack validation
-remain pending at this update. No combined gain is claimed. The PDSB boundary
+Independent sound-prefetch ABBA improves 50.6/50.6 to 53.5/53.9 FPS, p99 35/35 to
+35/34 ms, with zero audio faults. It is accepted on main in a8dd082f with gate
+75d875d7. Full matrix, combined cart builds/lint, real N64 boot and navigation
+pass. Combined browse10 measures 54.2 FPS; a supplemental 893-game SNES navigation
+check measures 56.4 FPS, both without audio/producer faults. These are operational
+checks, not an additional matched gain claim. SD readback matches the combined
+ROM e9ef4991657b737aabe9dfa45f439e6fc8c32fe6f1c2188511eefe09f388a0e0.
+Continuous-input natural song advance remains additional coverage to capture;
+the root navigation observation does not establish that transition. The PDSB boundary
 transfer experiment is rejected after its matched comparison.
 
 The broader frame audit has reviewed manager/main-loop hooks, decoder readiness,
 GPU submission/state, text/list reuse and image/sprite ownership; it is not a
-completed whole-codebase audit. Stable pager recording and consecutive identical
-glyph uploads remain unmeasured leads. Cache-tail publication is proof-only,
+completed whole-codebase audit. Stable pager recording and two-descriptor glyph
+rotation have actual-source host gates but await hardware measurement against
+the accepted main baseline. Consecutive identical-glyph reuse is excluded for
+low frequency in surveyed labels. An active-viz sound-tap threshold early exit
+passes 20,588 modeled ring-state cases but has no N64 timing or ordinary Final
+Fight benefit claim. Cache-tail publication is proof-only,
 including unresolved qualification of the complete publication contract. These
 are separate from already rejected boot micro-optimizations and do not reopen
 those experiments. See ui-testing.md for exact artifact and inventory references.

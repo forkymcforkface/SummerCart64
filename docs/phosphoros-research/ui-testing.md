@@ -1349,7 +1349,7 @@ the later frame-start mixer scope cannot establish that earlier call's cost.
 ### Completed PDSB decoder qualification and integration
 
 The PDSB-only complete-input specialization is accepted in root 89bacff4;
-rootccf570af adds the default verification gate and rootf9dc5119 documents it.
+Root ccf570af adds the default verification gate and root f9dc5119 documents it.
 It remains private to the existing N64 GIF owner. A pinned SDK-source generator
 removes only the PI-DMA watermark checks after the caller has completed its
 compressed record transfer. Generic SDK consumers, initial loads and PDS9 retain
@@ -1376,8 +1376,8 @@ byte-identical to stock. Every normal cart verification checks generated source
 and provenance, including stale or tampered outputs independent of make mtimes.
 
 Qualification includes all 1717 installed records against a bounded reference
-and actual assembled stock/private MIPS,1056 synthetic cases per variant in
-both 4/8MB models, and252 actual-caller completion/failure cases under fatal
+and actual assembled stock/private MIPS, 1056 synthetic cases per variant in
+both 4/8MB models, and 252 actual-caller completion/failure cases under fatal
 ASan/UBSan and warning-as-error compilation. Source/output drift, generated-file
 tampering and premature completion have precise negative controls. All three
 N64 cart builds and final canonical lint pass. Earlier failed lint runs remain
@@ -1412,3 +1412,51 @@ cache model does not alone establish write-buffer completion or a hardware gain;
 see mcu-followup/lz4-cache-review/README.md and gif-cache-tail/results.json under
 the E output root. The whole-codebase audit is not complete, and none of these
 remaining hypotheses is represented as an accepted optimization.
+
+### Main integration and SD deployment (2026-09-08)
+
+Sound admission is accepted on PhosphorOS main in a8dd082f, with its actual-owner
+gate in 75d875d7 and verification reference in a330da4d. The shared-code matrix
+exits zero in sound-prefetch-idle/matrix-final-exit0.log. Earlier failed runs
+remain preserved: isolated checkouts initially lacked ignored ROM/theme fixtures
+and the canonical Media directory. They are not counted as passes.
+
+The combined decoder/prefetch build passes all three cart builds and canonical
+lint. Parent source comparison checks all 390 tracked src/mk files against main;
+packed ROM segments match the fresh ELF, the private decoder matches the reviewed
+320 bytes, the generic decoder retains its stock 448 bytes, and the sound demand
+latch is linked. ROM SHA256:
+e9ef4991657b737aabe9dfa45f439e6fc8c32fe6f1c2188511eefe09f388a0e0.
+
+Real N64 boot is 336 ms, music ready 357 ms. Combined browse10-nav records
+543 frames/10021 ms (54.2 FPS), p50 18 ms, p99 35 ms, GIF 503/599 ticks,
+97 drops, settled heap 952712 bytes and zero retired resources/audio/producer
+faults. A separate SNES navigation check enters sd:/roms/snes with 893 games
+and runs `perfwalk 10 down*24 up*24 down*24`: 565 frames/10012 ms (56.4 FPS),
+p50 17 ms, p99 32 ms, GIF 534/599 ticks, 66 drops and zero audio/producer faults.
+This is a named supplemental paged-list check, not a replacement for browse10-nav
+or a matched comparison with earlier idle/root-list captures. Combined results
+establish operation, not an additional isolated or additive gain claim.
+
+The 145-second systems-root navigation playback observation contains no track
+transition; a later command observes a new playing track. It does not prove
+natural advance during continuous input. Music off/on and theme replacement
+restart successfully on the cart. Optional media demand, pause, stop, replacement
+and fallback admission are actual-manager host fixtures with modeled backends;
+SC64's production module set excludes media, so no end-to-end hardware media
+coverage is claimed. A future continuous-input natural-transition capture remains
+useful additional coverage.
+
+USB temporarily disappears during integration; the documented PnP recovery
+fails and no absent-device test is counted as passing. The user restores USB;
+all combined hardware checks then run successfully. The SD menu is uploaded with
+the console off and downloaded byte-identically to the hash above. SDRAM receives
+the same ROM before cart reset. Mega Tech, the theme observed after reconnection,
+is restored. The owned phos_boot_usb_20260908.bin scratch file is removed and the
+console is left off. No firmware or FPGA changes occur in this integration.
+
+Evidence under E:/phosphor-boot-round3/hardware/: main-combined-artifact.json,
+main-combined-carts-e.log, main-combined-lint.log, main-combined-boot1.log,
+main-combined-browse10.log, main-combined-browse10-transcript.log,
+main-combined-snes-nav.log and main-combined-sd-readback.n64. The earlier
+main-combined-carts.log is an interrupted wrong-drive invocation, not validation.
