@@ -1,6 +1,6 @@
 # SC64 boot optimization testing log
 
-Last updated: 2026-09-05.
+Last updated: 2026-09-07.
 
 Steady-state UI and direct original-GIF research continues in the
 [SC64 UI testing ledger](ui-testing.md). That round rejected an additional
@@ -32,16 +32,18 @@ backups as routine build cleanup.
 
 ## Current work
 
-- Active hardware experiment: **none**. The selected implementation round is complete.
+- Current installed state and newest measurements: [software-only round](#software-only-boot-round--2026-09-07).
+- Active research: follow-up software-only boot opportunities; no FPGA changes.
 - Current task: maintain this log for subsequent validation and experiments.
 - Fork: `vendor/sc64`, branch `phosphoros-boot`, based on v2.20.2
-  (`18041e25472075a166292d1195603bcefe9c9688`). All five selected changes have
-  separate verified commits, listed below.
-- Installed state: clean production c1/cursor/bounded-read bootloader and
-  combined SPI byte/group-batched MCU. No timing instrumentation is installed.
+  (`18041e25472075a166292d1195603bcefe9c9688`). The original five changes are consolidated in `1c8f6f9`; historical
+  tables retain their original measurement identifiers.
+- Installed state: clean production c1/cursor/bounded-read bootloader without
+  the diagnostic image, and SPI byte/group/full-duplex MCU. No timing
+  instrumentation is installed.
   The original MCU loader prefix and FPGA match the original backup.
-- Last verification: frontend ready 538 ms; first music 565 ms; 599 frames in
-  10.013 seconds, p99/max 17 ms, zero audio underruns. User theme preserved.
+- Last Final Fight verification: frontend ready 420 ms; first music 448 ms;
+  589 frames in 10.007 seconds, p99/max 31/33 ms, zero audio underruns.
 - Original firmware backup retained; owned scratch SD file removed.
 
 ## Still to try or validate
@@ -55,7 +57,7 @@ branches explicitly rejected below are not automatically on this queue.
 | 1 | Validate MCU winners beyond normal boot | Save/writeback, USB transfers, and button press/release/hold behavior; qualify the loop-timing impact before accepting extra cfg servicing. |
 | 2 | Broaden SD compatibility and failure coverage | Additional cards, fragmented FAT32/exFAT menus, missing/truncated files, retries, and save durability where affected; host error injection is not physical failure coverage. |
 | 2 | Qualify PI DMA handoff | Representative game and 64DD boot compatibility with original handoff state and interrupt behavior preserved; otherwise leave the candidate out. |
-| 2 | Design actual deferred diagnostic-logo loading | Preserve error/watchdog/exception displays, including cart or PI failure paths. Compare a complete implementation; the measured logo removal is only a diagnostic. |
+| Complete | Diagnostic logo loading | Superseded by user-selected logo removal; plain-background diagnostic text and watchdog/exception handling remain. See the software-only round below. |
 | 2 | Measure true cold-cartridge and end-to-end boot | A procedure that removes USB cartridge power and measures consistent start/end events; console mains cycles alone cannot supply these results. |
 | Research | Investigate coordinated FPGA/MCU transfer counts and SDRAM pipeline changes | First demonstrate a bottleneck and simulate protocol, arbitration, refresh, CRC, and boundary behavior. No hardware implementation or speed claim yet. |
 | Research | Review bounded register-read bursts | Audit side effects from the speculative extra register read before building a narrow MCU candidate. |
@@ -239,3 +241,72 @@ The candidate, temporary probes and build outputs do not enter production.
 A future attempt needs a different request/row-comparison pipeline that closes
 100 MHz, plus full simulation and hardware qualification; reducing the clock,
 relaxing constraints, refresh or physical memory timings is not this experiment.
+
+## Software-only boot round — 2026-09-07
+
+The FPGA image is unchanged. The retained bootloader removes the decorative
+logo while preserving plain-background error, watchdog, exception and test
+text. The MCU retains the original loader and uses one full-duplex DMA transfer
+for the same six-byte register-read frame. Research notes:
+[bootloader review](notes/bootloader-software-review.md) and
+[MCU transport review](notes/boot-transport-review.md).
+
+Measurements use Final Fight on the real 4 MiB N64. Bootloader entry is measured
+with identical isolated transient probes; the frontend counter starts after
+platform initialization and excludes bootloader/IPL3/menu loading. These are
+not outlet-to-picture or cold-cartridge measurements. Do not add independently
+measured phases into an asserted end-to-end time.
+
+| Experiment | Baseline | Candidate | Decision |
+| --- | --- | --- | --- |
+| Lossless packed diagnostic logo | Entry 65.806 / 64.792 ms | 61.397 / 60.458 ms | Positive, superseded by user-selected logo removal; no packed decoder retained. |
+| Remove diagnostic image only | Entry 65.806 / 64.792 ms | 52.352 / 53.234 ms | Retained in `701e31d`; mean saving 12.506 ms. ROM 98,304 → 65,536 bytes. |
+| Full-duplex register read | Comparable frontend 424–425 ms; music 452–453 ms | 419–420 ms; music 447–448 ms | Retained in `a57d302`; repeated modest 4–6 ms frontend gain; MCU +64 bytes. |
+| Initial frontend phase profile | Warm ready 425 ms | Theme ~202 ms, root scan ~62 ms, configuration ~36 ms, language cache ~31 ms | Attribution only; all temporary instrumentation removed. |
+
+The first MCU-candidate sample was 512/539 ms; the earlier instrumented baseline
+also had a 520 ms outlier. These are retained in raw logs but are not comparable
+warm-cache speedups. Baseline restoration is a full byte-identical firmware
+readback. Original and newly synchronized libdragon frontend builds both return
+425/453 ms without profiling. The runtime source and staged menu are unchanged.
+
+Validation: actual-source ASan/UBSan clear/text/error framebuffer comparisons
+pass; real N64 plain diagnostic text CRC is `E6E7751D`, exactly matching the
+baseline renderer. The packed experiment's logo CRC was `DAFE56B3`, also exact.
+Clean production bootloader builds with `-Werror` and no timing hooks.
+Full cursor, bounded FatFs, SPI and grouped-register regressions pass, including
+168,608 SPI cases and 93,248 SD-command/group cases. Forty unchanged-FPGA SPI
+simulation cases pass. Four real SD roundtrips (511, 512, 513 and 131,584 bytes)
+match exactly. Combined firmware runs Final Fight for 589 frames / 10.007 s,
+p99 31 ms, maximum 33 ms, zero audio underruns and ongoing GIF progress;
+this is a runtime smoke test, not a claim of a measured UI FPS improvement.
+Twenty live pings pass with a maximum 79.000 ms response.
+
+The clean no-logo-only installation boots 425/453 ms; the combined installation
+boots 420/448 ms and is left installed. Firmware readback verifies the exact
+bootloader and MCU payloads, erased tails, original MCU loader and unchanged
+FPGA. No FPGA build or update is part of this round. Save power-loss, additional
+physical cards and broad retail/64DD compatibility remain broader qualification,
+not claims made by these focused tests.
+
+Local ignored evidence is under `build/software-boot/`: `results.json`, paired
+boot logs, `no-logo-parent-test/`, `no-logo-integrated-test/`,
+`spi-parent-regressions/`, `combined-perf.log`, `combined-pings.json`, firmware
+backups/update packages and exact readbacks. Original firmware recovery backup
+is `firmware-before.bin`; no scratch SD file remains. No commits are pushed.
+
+### Current artifacts
+
+| Component | Bytes | SHA256 |
+| --- | ---: | --- |
+| Bootloader | 65,536 | `146e8831eca512cad7af3ba39ca32d1984e3d9ccc9372d1602d70c674edc0684` |
+| MCU | 21,776 | `2ff985dc27e726c2d5c8a64c313b2b4065361f723d7e7fc51ad2c8f961415d8a` |
+| Installed full readback | 2,179,072 | `84d593bb6d1e81924a5e1b1b314d2eac5a4060cd41952c1023c73a893cd5fbc1` |
+
+### Remaining software leads
+
+Three follow-up reviews are active: compressed bootloader match-window tuning,
+MCU configuration/USB transaction overhead, and PhosphorOS startup CPU/I/O work.
+These are unaccepted leads until bounded correctness and real N64 A/B tests pass.
+The earlier generic deferred-logo task is superseded by user-selected image
+removal; diagnostic text stays resident.

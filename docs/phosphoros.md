@@ -2,8 +2,8 @@
 
 `phosphoros-boot` is based on upstream v2.20.2,
 `18041e25472075a166292d1195603bcefe9c9688`. It retains the upstream license,
-protocol, SPI clock, SD block limits, and FPGA image. Each optimization has
-its own commit; host regression infrastructure is a separate commit.
+protocol, SPI clock, SD block limits, and FPGA image. The original optimization series is consolidated in `1c8f6f9`; the
+historical table retains the original measurement identifiers.
 
 ## Retained changes and measurements
 
@@ -76,3 +76,7 @@ This branch excludes the unbounded extent implementation, SP DMA handoff,
 calls, single-sector command changes, and compiler experiments that showed no
 useful gain. PI DMA handoff and proper deferred-logo loading remain separate
 research. No FPGA optimization is included.
+
+## Further software-only improvements
+
+The [2026-09-07 round](phosphoros-research/boot-testing.md#software-only-boot-round--2026-09-07) retains removal of the decorative diagnostic logo (`701e31d`) and full-duplex MCU register reads (`a57d302`). Error text remains available; the FPGA and original MCU loader are unchanged. The detailed ledger records phase-specific measurements, hardware checks, artifact hashes and qualification limits.
