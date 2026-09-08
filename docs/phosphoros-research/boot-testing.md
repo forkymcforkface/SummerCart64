@@ -340,3 +340,128 @@ commits. Each accepted performance experiment remains independently rollbackable
 test infrastructure and documentation have separate commits. FPGA and MCU loader
 remain unchanged. Installed firmware currently remains the baseline. The original
 Ghosts'N Goblins theme must be restored after testing; no commits are pushed.
+
+### First hardware pass
+
+All six compression windows boot Final Fight with music. The original large
+timing reporter gives entry times 53.429/53.607/52.710/52.272/52.232 ms for
+2/4/16/32/64 KiB, against 8 KiB at 52.698 and 53.224 ms. A smaller reporter
+removes its printf payload: 50.240/49.452/49.310/49.745/49.813 ms against
+8 KiB at 49.758 and 49.771 ms. These are separate measurement series, not a
+before/after optimization claim. The ranking changes with probe footprint;
+4/16 KiB require repetition before any retention decision. Loaded images are
+byte-identical within each series. No compression change is installed.
+
+The established formatter passes its real N64 ABI/renderer comparison:
+1,197 format cases, zero format errors, zero mismatched framebuffer words,
+29,262 white pixels in both renderings. Appending the negative-control text
+produces 376 differing words, proving the pixel comparison is sensitive.
+The original renderer's actual uncached framebuffer is used, and the target
+reports 4-byte long / 8-byte long long. Final Fight then boots and plays music.
+This diagnostic establishes correctness; its timing is not performance evidence.
+The production firmware remains unchanged; formatter speed A/B is next.
+
+Module attribution identifies `memview` initialization at 19,367 us, versus
+SC64 availability 115 us, repeated firmware version 111 us, LED SET 137 us and
+button SET 133 us. Other measured initializers: resident 1,178 us, viz 712 us,
+controller pak 406 us, cheats 400 us. SC64's aggregate 2,673 us includes the
+temporary command-attribution logging. The profiler's total boot time is not
+a production baseline. No version-cache or LED/button elision is justified by
+these sub-0.2 ms command timings. A separate candidate removes the redundant
+early Memory-view statistics sample while retaining its declaration and its
+existing activation-time refresh; build and hardware comparison are pending.
+
+Memory-view deferral is rejected after testing: baseline warm ready 419/420 ms,
+candidate 419/420 ms; cold candidate 513 ms overlaps baseline 511/515/517 ms.
+The statistics seam calls `phos_cart_cache_open`; removing that first call
+merely moves the required cache-open/format into `phos_theme_engage` through
+`phos_cart_cache_theme`. The 19 ms attribution is real work, not avoidable work.
+No production Memory-view change is retained. Its isolated target build and
+activation guard pass, but that does not make it a performance improvement.
+
+Frontend ROMs have different build timestamps, deliberately invalidating the
+cart cache when switching images. Cold and consecutive warm results are kept
+separate; the stamp is never forced equal across binaries. Browser root-arm
+candidate cold 513/515 ms versus adjacent baseline 515/517 ms; warm 415/414 ms
+versus 419/420 ms. Final restoration/repetition and focused lifecycle validation
+remain pending before acceptance.
+
+The formatter's minimal transient probe records entry 48.195/48.559 ms versus
+49.190/49.213 ms baseline; menu-load results overlap. Unused-response candidate
+entry 49.209/49.240 ms, menu 28.026/28.010 ms versus baseline 28.091/28.100 ms:
+the tens-of-microseconds menu difference requires attribution and repetition,
+not a millisecond-scale gain claim. Installed-flash formatter comparison is
+underway. The cart currently contains the original-formatter minimal timing
+probe; readback verifies unchanged MCU and FPGA. Restore a clean bootloader
+before completing this round.
+
+### Accepted formatter
+
+Installed-flash baseline entry samples 49.686/49.628 ms versus candidate
+47.524/48.034 ms give a mean reduction of 1.878 ms. Entry is the measured
+IPL3-to-C phase, not total outlet-to-picture time. First boots after MCU/firmware
+reset perform SD initialization (menu load about 42 ms); consecutive warm reads
+are about 28 ms, so these are not pooled into a claimed formatter I/O gain.
+
+Performance commit `faacf01` retains the pinned formatter; `a5978e2` adds its
+independent regression gate. The clean production image is 49,152 bytes,
+SHA256 `722056face42e8dd48e6ea5294d46efb7b7fdeeb59efc08884e1a16e0c724519`.
+Exact firmware readback matches its payload and erased tail, with original MCU
+and FPGA unchanged. No research/timing symbols remain. Normal installed SD-menu
+boot passes at 421 ms ready / 448 ms music. This clean image is installed and
+becomes the fixed bootloader baseline for subsequent MCU experiments.
+
+Additional agent research continues at the user's request: small register-group
+TX staging, combined SD DAT/DMA command grouping, and SC64-menu-only file padding
+are isolated leads. They have no production acceptance yet. R1b status reuse is
+excluded before hardware because independent command completion and DAT0 busy
+signals lack the required ordering guarantee; the fresh status read stays.
+
+### Continuing software-only queue
+
+Browser root-scan coalescing is accepted in PhosphorOS `0b2d3e5b`, with its
+identity guard in `32bdf743`. The full production matrix passes. Seven focused
+host captures match baseline byte-for-byte after a four-second scan settle;
+the earlier half-second empty captures were premature on both builds. N64
+root/navigation/theme checks pass with music and zero underruns. Integrated
+production ready is 508 ms cold / 414 ms warm; the controlled warm comparison
+is 419/420 ms baseline versus 415/414 ms candidate.
+
+The original cache-open candidate is excluded before hardware: publishing a
+valid new-theme header before clearing all entries permits interrupted writes
+to expose stale sealed entries. A separate table-first variant is under review;
+its fault-injection guard must include surviving tail entries, real payload
+validation and a failing unsafe-variant control before hardware acceptance.
+
+Pending independent hardware candidates: CFG software-query read elision; USB
+read and push batching; register-group TX staging; combined SD start grouping;
+timer reciprocal arithmetic; libcart within-call sector cursor reuse and
+completed-status snapshot reuse; full-menu c0/c1/c2 decompression, six c1
+windows and SC64-only 512-byte padding. Source/RTL tests establish only their
+stated contracts, not hardware timing or universal firmware safety. Parent
+owns the cart; agents continue independent source research and isolated builds.
+
+CFG query candidate has passed exact MCU readback, preserving original loader,
+FPGA and accepted clean formatter bootloader. Live same-value configuration,
+invalid-ID error and recovery checks pass for both baseline and candidate.
+Its first post-update boot is 421 ms ready / 448 ms music, with SD initialization
+43.137 ms; warm comparisons and baseline restoration are still pending.
+
+CFG-query experiment is rejected for boot performance: candidate ready 421/421 ms,
+restored baseline 422/421 ms, preceding baseline warm 421 ms. Warm menu read
+28.153 ms candidate versus 28.065 ms restored; no repeatable gain. Exact original
+MCU readback after restoration passes. No production CFG change is retained.
+
+USB-read batching passes exact firmware readback, live configuration errors/
+recovery, and a 1 MiB deterministic SD round-trip hash. Boot ready 422/422 ms,
+music 449/449 ms; warm menu load 27.475 ms. A first upload comparison differs
+substantially (4,244 ms baseline, 533 ms candidate), but the baseline created a
+new file while the candidate overwrote it. This is not yet valid throughput
+evidence; repeated overwrite measurements on restored baseline are in progress.
+
+Parent reruns the strengthened cache-format fault gate successfully. A sealed
+entry at index 255 with a valid payload header is found before interruption.
+Six table/header interruption boundaries reject it under the new theme with
+the table-first candidate; the original header-first candidate wrongly accepts
+it after each interrupted table-clear boundary. The safe candidate remains
+unapplied pending hardware A/B.
