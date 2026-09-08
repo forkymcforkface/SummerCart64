@@ -33,7 +33,8 @@ backups as routine build cleanup.
 ## Current work
 
 - Current installed state and newest measurements: [software-only round](#software-only-boot-round--2026-09-07).
-- Active research: follow-up software-only boot opportunities; no FPGA changes.
+- Follow-up software-only reviews are complete; their unaccepted experiments
+  are recorded below. No FPGA changes.
 - Current task: maintain this log for subsequent validation and experiments.
 - Fork: `vendor/sc64`, branch `phosphoros-boot`, based on v2.20.2
   (`18041e25472075a166292d1195603bcefe9c9688`). The original five changes are consolidated in `1c8f6f9`; historical
@@ -305,8 +306,11 @@ is `firmware-before.bin`; no scratch SD file remains. No commits are pushed.
 
 ### Remaining software leads
 
-Three follow-up reviews are active: compressed bootloader match-window tuning,
-MCU configuration/USB transaction overhead, and PhosphorOS startup CPU/I/O work.
+Three follow-up reviews are complete: [compression and loading](notes/boot-decompression-followup.md),
+[MCU configuration/USB overhead](notes/mcu-boot-followup.md), and
+[redundant frontend root scans](notes/frontend-boot-followup.md).
 These are unaccepted leads until bounded correctness and real N64 A/B tests pass.
 The earlier generic deferred-logo task is superseded by user-selected image
 removal; diagnostic text stays resident.
+
+After verification the original Ghosts'N Goblins theme is restored through the normal theme switch funnel; its music starts successfully. Final Fight remains the performance workload for all comparisons above.

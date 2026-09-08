@@ -11,3 +11,5 @@ SummerCart64 owns the FPGA, firmware and toolchain research for PhosphorOS here.
 - [History migration and original commit identifiers](history-migration.md)
 
 Historical commands and `build/` evidence paths use the enclosing PhosphorOS checkout as their working directory unless explicitly stated otherwise. Ignored captures and build artifacts remain there. Links back to PhosphorOS contracts and source require this repository at `vendor/sc64` in that checkout. Historical results retain their original build hashes.
+
+Software-only follow-up reviews: [bootloader](notes/boot-decompression-followup.md), [MCU](notes/mcu-boot-followup.md), and [frontend](notes/frontend-boot-followup.md). These are candidate lists, not accepted speedups.
