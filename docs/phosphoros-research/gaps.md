@@ -156,9 +156,23 @@ Lazy directory advance and decoder microchanges
 have no convincing reproducible gain so far; they are not production changes.
 No FPGA or clock modification belongs to this software round.
 
-Current systems-file buffering, within-block cache copy batching, cart-version
-caching and smaller1KiB/512B cache geometry fail their hardware performance
-comparisons and are excluded. Source-backed opportunities still under test are
-directory name copying, systems parser string copying, a bounded virtual wav64
-guard read, and avoiding the browser build discarded before theme engagement.
-The last item affects lifecycle and requires its additional view gates.
+Systems-file buffering, parser string copying, within-block cache copy batching,
+cart-version caching, path joining, direct cartfs DMA and smaller 1KiB/512B cache
+geometry fail their hardware performance comparisons and are excluded. Removing
+theme-key hashes fails the existing owner mutation test before hardware.
+
+The virtual wav64 guard change passes isolated sound comparisons. Its first
+clean production artifact also contained uncommitted filename copying; that
+artifact and the later contaminated controls require the correction documented
+in boot-testing.md. The exact-root replacement is independently verified against
+its packed ELF and is undergoing hardware checks. Directory name copying still
+needs its final uncontaminated comparison. Avoiding the browser build discarded
+before theme engagement saves about 5–6 ms in initial tests but requires the
+remaining context-aware lifecycle gates and full current-source build matrix.
+
+CFG argument-pair reads are undergoing an MCU-only hardware comparison with
+exact original recovery-loader/FPGA/formatter readback. Manager attribution puts
+language initialization at about 22.4 ms and game-database initialization at
+13.7 ms. A narrower database I/O probe is ready; these measurements are not yet
+new optimizations. Native controller initialization has no arbitrary wait that
+can be removed while preserving its first-ready-input contract.

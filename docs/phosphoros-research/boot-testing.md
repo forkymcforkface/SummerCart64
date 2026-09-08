@@ -1264,3 +1264,66 @@ and ROM4ad97820 remain unchanged. The historical actor is unproven. Originals
 and manifests are preserved, with a fresh original-hash reproduction and audit
 under E:/phosphor-boot-round3/mcu-followup/elf-provenance-audit. Future inspections
 use read-only parsing or an explicit separate output ELF; no silent hash refresh.
+
+### Further comparisons and artifact correction
+
+The path-join candidate is rejected: 344/346 ms, Counts 24381817/24493937,
+versus restored 346/345 ms, Counts 24462502/24384100. There is no repeatable
+gain. Bounded cartfs direct DMA is also rejected for boot: 342/342 ms,
+Counts 24348833/24309627, versus restored 341/341 ms, 24268068/24253303.
+Neither experiment enters production.
+
+Browser initial-build deferral measures 331/332 ms against baseline 336/338
+and restored 336/336 ms. It remains pending: focused host comparisons and
+real media activation pass, but collection/game dialog contexts and the full
+current-stack matrix/hardware lifecycle gates are not complete.
+
+An artifact audit corrects the earlier clean sound result. ROM 08e5176d
+contains both the accepted sound guard and the uncommitted filename-copy
+experiment; it is not a sound-only build. The isolated sound A/B evidence
+remains separate. ROM C0D60778 additionally contains the rejected cart-key
+copy experiment. Both files labeled fs-name-sound-base/candidate incorrectly
+match C0D60778 and are excluded as controls. Copying restored source files
+preserved older timestamps, allowing stale objects to survive incremental
+builds. Direct decompression and linked-function inspection establish these
+facts; evidence is under E:/phosphor-boot-round3/mcu-followup/fs-name-sound-audit.
+A complete exact-root source rewrite and rebuild is in progress. No timing
+from the mislabeled pair establishes a gain; the staged production ROM must
+be corrected before final deployment.
+
+Current manager attribution repeats: language 22421/22435 us, gamedb
+13704/13672, input 7604/7610, mixer 3080/3080, path 503/503,
+connectivity 92/92 and storage 35/35. These scopes do not overlap.
+Theme-cache hits cost 12501/12459 us, plus identity 7263/7116 us;
+nested hydration costs 4074/4075 us and body CRC 1903/1904 us.
+Sound directory scans cost 6895/6710 us for the theme and 3393/3427 for
+defaults. Playlist album open costs 6158/6340, root open 1669/1643 and
+first-entry discovery 233/233 us. Diagnostic reports run after readiness
+and delay music; those music timestamps are not production comparisons.
+
+Removing cached theme-key hashes fails the existing actual-owner mutation
+test and is rejected before hardware. Skipping controller detection is
+excluded because native initialization establishes the first ready input
+snapshot; no arbitrary wait has been identified. Narrow game-database I/O
+attribution is under preparation. CFG argument-pair firmware qualification
+is in progress with the original recovery loader, FPGA and formatter retained.
+
+The exact-root rebuild is committed as root304cfd56, ROM SHA256
+A5A7268180C5EC157CBCB6D7FD8E7F7F92811865788CC701BEF56B432C0E851D.
+Independent verification confirms the original filename/cart-key formatters,
+accepted virtual sound guard, no Count probes and exact compressed-ROM/ELF
+loaded segments. Carts and lint pass. Final Fight cold419/warm342/339 ms ready,
+439/363/360 ms music; runtime smoke records597 frames/10004 ms, zero audio
+underruns and producer overruns, gif_frame553/tick599/drop47. This is a runtime
+smoke, not a replacement for the committed browse10-nav epoch.
+
+CFG argument-pair MCU is rejected for boot retention. Candidate341/342/339 ms
+versus before342/339 and restored340/343/343 does not establish a repeatable
+improvement. Baseline, candidate and restoration each pass all15 read/protocol
+cases and the seven-command configuration probe. Baseline and candidate SD
+round trips match exactly. Candidate readback matches appa9ee4805; restoration
+matches acceptedff00d9ed. All readbacks preserve the original4096-byte recovery
+loader, FPGA and formatter. Physical cart-button debounce is not measured;
+no physical-button qualification or broad firmware-safety claim is inferred
+from the protocol tests. The accepted firmware is restored and no candidate
+firmware source is retained in production.
