@@ -26,6 +26,7 @@ python3 tests/run.py --output build/host-tests --suite cursor
 python3 tests/run.py --output build/host-tests --suite bounded
 python3 tests/run.py --output build/host-tests --suite mcu --mcu byte --spi split
 python3 tests/run.py --output build/host-tests --suite mcu --mcu combined
+python3 tests/run.py --output build/host-tests --suite formatter
 ```
 
 The default requires combined MCU batching and full-duplex register reads.
@@ -59,6 +60,21 @@ successful overall exit. Compile diagnostics are retained in suite results.log.
   SD-command and DMA functions. Check busy/error responses, return values,
   byte swapping, trigger-last order, frame/byte savings, optimized read-header
   calls, address patterns, 1 to 256 blocks and zero-count no-op.
+- Diagnostic formatter: current call-site inventory, pinned-header provenance,
+  bounded display wrapper, and 544,796 sanitized formatting comparisons. New
+  or unsupported format tokens and unchecked dynamic formats fail explicitly.
+  The formatter is vendored; tests do not download an implementation.
+
+`tests/formatter.py --source sw/bootloader --output build/formatter-test
+--n64-probe build/formatter-probe` additionally generates an isolated N64 ABI
+and framebuffer diagnostic source tree. The destination must not exist and
+must be outside the source tree. Build it with the normal bootloader toolchain
+and explicit version metadata. The generator never deploys or flashes it.
+On hardware require 1,197 cases, zero format/framebuffer errors, equal positive
+white-pixel counts, a positive negative-control mismatch count, and successful
+menu/audio boot afterward. The actual framebuffer accessor prevents an empty
+or unrelated memory range from passing. Host checks alone do not establish
+the target newlib ABI; the existing plain-renderer gate remains separate.
 
 FatFs configuration is unchanged: revision 80286, FASTSEEK 1, READONLY 0, MKFS 1,
 LBA64=0, EXFAT 1 and 512-byte sectors are required. The harness supplies disk
