@@ -1095,3 +1095,21 @@ Vendor7e37906 commits the new gate and b4f4942 documents it. Parent reviewed
 full-suite.log and exit0 under E:/phosphor-boot-round3/mcu-followup/vendor-final-full-suite.
 The same accepted READ_AT MCU is reinstalled; full backup readback again verifies
 its exact application, original recovery loader and unchanged FPGA/bootloader.
+
+Root841682c7 accepts bounded configuration key construction on the current
+combined stack. Candidate ready340/340ms, music367/367ms; baseline343ms warm,
+restored345/343ms. Clean ROM8db94f9e27e8741d0dfd2d365a248352af02ce4c5321421d261a0b62d2dff4ab.
+Full production matrix passes. Parente71014c4 adds the corrected permanent gate:
+117,766 actual-source comparisons with shared nonzero sentinel initialization,
+precise truncation negative and fatal sanitizers. Parent rejected the original
+gate's comparison of uninitialized trailing bytes; its earlier claimed count
+is superseded. Production key order, truncation and palette semantics remain.
+
+The sound follow-up finds no narrow safe deferral: advance/confirm/open/deny
+must support first input; playlist already defers discovery after the first
+playable song. Optional screenshot/shoot deferral requires platform policy and
+has no measured independent benefit. No sound behavior change is retained.
+Directory filename copy, systems.dat4K/16K buffers, current text-onlyO2 and
+current heap logging are qualified or preparing final hardware comparisons.
+A duplicate cart-version query and within-block FAT-cache copies are new
+research leads, not accepted changes.
