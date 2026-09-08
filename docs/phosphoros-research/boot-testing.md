@@ -1167,3 +1167,37 @@ Count baselines exactly match the shared e710 baselines00534c8d/4ad97820.
 All earlier non-fresh cart-version artifacts are excluded. The separate duplicate
 button-mode write is not removed: the earlier init ignores individual command
 failures, so the module write is its only retry.
+
+### Current-stack acceptance and rejected follow-ups
+
+Root ff917700 accepts consolidated startup heap logging; 0391f0e1 extends the
+existing RTC gate. Clean ROM d4e6c1712b3931e462765a5f8c8d30b95e3e913009c8d7c6073c3d0eec2bc2e3
+passes cold419/warm340ms ready and445/367ms music. The combined line preserves
+mem, heap and expansion values. Absolute Count improvement is approximately
+0.9ms; frontend boot_ms excludes this interval. Final persistent deployment is pending.
+
+The installed systems.dat downloads as1,990 bytes, SHA256
+e7a73793c1ecd5278e69c971f879319a64ed9cad5c2c7a16a1deab46e02bbfaf,
+matching the generated SC64 catalog. Current-stack4KiB buffering ties at340/340ms,
+against warm340ms before and340/341ms restored. It is rejected despite the earlier
+isolated result and full matrix pass. The proposed permanent gate remains research.
+
+Within-block FAT copy batching is rejected: candidate346/346ms, compared with
+warm342ms before and346/344ms restored. Cart-version caching is also rejected:
+candidate348/349ms versus347/346ms restored. Passing correctness gates alone
+does not justify either performance change. No production code from either remains.
+
+The final core-view probe separates outer views22,205us from nested themed
+refresh12,687us. Outer scopes: favorites7,510us, recents2,027us, collections1,735us,
+game-user2,055us, browser8,340us and declarations412us. The initial browser build
+is discarded by the later themed refresh. An opt-in deferral through the existing
+container owner is under investigation; it is not accepted and requires lifecycle
+and view validation. Deferring membership/hidden-game data needed by first input
+is excluded. A virtual sound guard unbuffered-read candidate passes31,680 actual
+source boundary cases per variant and awaits hardware. Cache geometry, current
+filename-copy integration and systems string-copy comparisons remain in progress.
+
+Both smaller cache geometries are rejected.1KiB blocks ready349/350ms with
+Counts24617064/24687078;512B blocks388/387ms with26447082/26468326; restored
+2KiB blocks346/346ms with24470595/24496293. Correctness/fault gates pass, but
+the boot regression rules out retention without an unnecessary runtime sweep.
