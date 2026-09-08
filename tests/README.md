@@ -83,3 +83,13 @@ fails if expected names disappear. SD type/enum changes require explicit test
 adaptation. Source snapshots are regenerated and hashed on every run. Retained
 logs describe that snapshot only; rerun after edits. Compression selection
 requires a separate target build and N64 timing check.
+
+## Plain diagnostic display
+
+After bootloader display or packaging changes, run the actual-source framebuffer regression:
+
+```sh
+python3 tests/no_logo.py --source sw/bootloader --baseline . --output build/no-logo-test
+```
+
+It compares the complete plain, text, and error-message framebuffers against v2.20.2 with ASan/UBSan and rejects linking the decorative logo. Real-console VI and exception entry remain hardware checks.
