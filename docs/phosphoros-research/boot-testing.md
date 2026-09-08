@@ -854,3 +854,48 @@ are excluded before hardware. Menu-only PI DMA handoff is likewise excluded:
 it changes inherited PI DMA address/length state for unknown third-party menu
 IPL3s. A reliable complete-IPL3 guard costs the same PIO reads being removed.
 Its source model/build passes are not hardware qualification.
+### Round3 continuation: config index and remaining qualified candidates
+
+Root 187de724 prepares owner-fixture calloc/index cleanup; 8b598a27 accepts
+configuration indexing; 0ccd09f1 installs its default lifecycle/OOM gate.
+The standalone production clone on E replaces the Docker-incompatible linked
+worktree. The final config-index matrix passes all nine production targets,
+SC64/EDX/ED64P and lint. Earlier missing-fixture runs are incomplete, not passes.
+E:/phosphor-boot-round3/config-index-final-matrix.log is the completed gate.
+
+| Current matched warm candidate | Baseline A / restored B ready ms | Candidate ready ms | Decision |
+| --- | --- | --- | --- |
+| Config lookup index | 390 / 393 | 375, 376 | Accepted, 8b598a27 |
+| Utils-only O2 | 390 / 393 | 384, 384 | Positive; production cart gates/smoke pending |
+| Heap-only O2 | 391 / 392 | 383, 383 | Positive; production integration pending |
+
+All six current candidate/baseline ROMs remain622592bytes. Corresponding SD
+load and first-platform Count logs are under E:/phosphor-boot-round3/hardware/
+current-*. These ready_ms values exclude platform_init and are not total
+power-to-picture. Config production cold455/warm377ms, music481/403ms;
+10-second Final Fight capture570UI frames, GIF561frames/598ticks, underrun0,
+produce_over0. Both theme switches complete and resume music on the4MB rig.
+
+Old-baseline microexperiments are closed: INI4KiB421/422ms; gamedb index4KiB
+422/422; TLSFmask419/419; fls16 422warm; builtin-fls438/439; language validation
+423/423; removing cache qsort422/422. Bracketing baselines span419-422ms.
+None establishes a retained gain. TLSFpeek418/418 then419/419 also falls within
+that spread and is rejected. Current native cursor402/401ms and status401/401ms
+match current baselines401-402ms; neither is retained. Source/model savings
+are not substitutes for N64 results.
+
+READ_AT independent and parent source gates pass4224MCU cases,24explicit
+unsafe-legacy-overflow boundary rejections,7680native cases,12capability/init
+cases and three fault-derived negatives. Candidate app ff00d9ed7f6a994a04786420
+is21840bytes; matching baseline reproduces installed2ff985dc. No firmware flash
+or hardware READ_AT qualification has occurred yet. The warm removed-SET work
+measurement10.742ms is only an upper bound, not an achieved saving. The new
+command bounds fixed8KiB BRAM; it deliberately rejects legacy address-addition
+overflow and leaves original I/s unchanged. Recovery loader/FPGA stay original.
+
+Font diagnostic records all four Final Fight fonts using native sprite loading,
+not BMP decoding or the generic cache route. Warm load12.391/20.410/10.323/4.394ms;
+CI8 master4.569/7.954/4.798/2.102ms. This is attribution-only. Agents investigate
+native loading and atlas construction, plus loader cache-flush work; no candidate
+is accepted from these measurements. Heap-log, bounded ROMPAK and sector-padding
+comparisons remain in the serialized parent-owned hardware queue.
