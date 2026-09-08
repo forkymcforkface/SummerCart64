@@ -1460,3 +1460,83 @@ main-combined-carts-e.log, main-combined-lint.log, main-combined-boot1.log,
 main-combined-browse10.log, main-combined-browse10-transcript.log,
 main-combined-snes-nav.log and main-combined-sd-readback.n64. The earlier
 main-combined-carts.log is an interrupted wrong-drive invocation, not validation.
+
+### Pager acceptance and glyph-tile rejection (2026-09-08)
+
+Parent review reruns the pager actual-owner gate and the two-tile GPU/libdragon
+autosync gates in fresh E output directories. It also reruns the mixed-atlas
+20,000-case text gate; that candidate remains hardware-unmeasured. The pager
+patch initially contains unrelated comment encoding changes; restoring the exact
+baseline comments produces a freshly built byte-identical ROM. No mojibake is
+retained in source.
+
+Both hardware comparisons use the supplemental SNES893 navigation scenario:
+Final Fight, systems root, down four rows and enter, assert sd:/roms/snes n=893,
+then `perfwalk 10 down*24 up*24 down*24`. This exercises a populated list and page
+boundaries. It is separate from, and does not redefine, browse10-nav.
+
+| Experiment | Baseline FPS | Candidate FPS | Baseline p99 ms | Candidate p99 ms | Decision |
+| --- | --- | --- | --- | --- | --- |
+| Record unchanged pager | 58.259 / 58.759 | 59.141 / 59.394 | 31 / 31 | 30 / 30 | Accept |
+| Alternate two glyph tile descriptors | 58.477 / 58.853 | 58.054 / 58.130 | 28 / 30 | 30 / 28 | Reject |
+
+Each comparison is baseline/candidate/candidate/baseline with identical paired
+build metadata and source differing only by the proposed optimization. All eight
+captures have zero audio underruns, producer overruns and GIF slice overruns.
+Pager GIF frames are baseline 566/562 and candidate 566/565; two-tile baseline
+567/564 and candidate 564/564. Timeline ticks/drops and settled memory are in
+hardware/{pager,tiles}-snes-*-nav.log and *-mem.log under the E output root.
+
+The timer interpretation is checked against rgbpiui.c: tdraw0 precedes
+rtk_frame_begin, so PERF_DRAW includes framebuffer acquisition. An agent's initial
+contrary report is rejected and corrected. With matching per-frame counts,
+draw.avg minus fbwait.avg is residual render-bracket elapsed time, not pure CPU
+time: acquisition also polls cart streams. Pager residuals are 9165/9126 us
+baseline versus 8863/8877 us candidate; two-tile residuals are 9103/9010 versus
+9145/9170 us. The two-tile command-count model does not translate into a hardware
+gain, so no production change is kept.
+
+Pager is accepted in main e0e120e8, with permanent tests in 94f28ca6. All 42 N64
+catalog cases pass, FPS range 56.7-61.1 in one-second smoke windows, p99 maximum
+35 ms, minimum observed free heap 606684 bytes, zero audio/producer faults.
+Three active-SNES Mega Tech/Final Fight cycles settle at the same reported heap
+usage with zero retired resources. Two N64 captures show page 2/55: their
+animated backgrounds differ, but the pager foreground mask matches at all 50
+pixels in the checked region. Actual-owner draw traces provide the separate
+geometry/ordering comparison.
+
+The permanent gate retains the original text-eviction case and adds pager
+replay, 4097-row paging, geometry/font changes, co-drawn owners and fallback.
+Four precise invalidation mutants abort under fatal sanitizers. Canonical all
+passes in rtk-pager-block/validation/finalall.log; the earlier all.log fails for
+a missing Media fixture directory and is excluded. All 390 source/make files
+match the integrated tree. The matrix ROM differs from the fixed-metadata
+hardware ROM only in its two compiled build timestamps, as recorded in
+validation/buildstamp-proof.json.
+
+Host coverage discovers 39 views with valid media, collections and picker
+contexts. The delete-cancel driver initially uses six downward actions and
+selects Reset Name because Box-Art Region adds a row. Parent review of the
+source and rendered menu identifies seven actions; the corrected test enters
+the confirmation and cancels without deleting the fixture. Failed attempts are
+excluded in host-regression/coverage.json. All 25 captured BMPs, including
+labeled excluded attempts, are preserved unchanged in host-regression/gallery.html.
+The black video fixture is not video pixel-parity evidence.
+
+The accepted pager ROM is
+8b681bdebf71de55481e2c3efd42623b4fac2a9147367754302ebb9768421251;
+control is e9ef4991657b737aabe9dfa45f439e6fc8c32fe6f1c2188511eefe09f388a0e0.
+Canonical browse10-nav operational check passes at 54.4 FPS, p50 18 ms, p99 32 ms,
+zero audio faults; this lone operational check is not an additional matched gain
+claim. Returning from the different-stamped tile pair causes one cold-cache boot
+of 410 ms; the matched pager runs boot at 332-337 ms. No boot change is proposed.
+The accepted SD menu is read back byte-identically and also loaded to SDRAM before
+reset. Final Fight, observed at this session's initial boot, is retained and the
+console is left off. No firmware/FPGA changes or pushes occur.
+
+Two-tile control/candidate hashes are 1ae53bc0c70100cd69c1d436d0273fa73286b19187ae910676831d7bd873e3e8
+and ea72dfb434aff615b1c4d629410cf0e917bae8d43ff4521f82a7bae08137761e.
+Independent gate reruns are in pager-parent-review, glyph-tiles-parent-review
+and text-source-parent-review. Hardware summaries are hardware/pager-snes-results.json
+and hardware/tiles-snes-results.json; view and image evidence uses the pager-*
+and screenshot_1788884469_1.png / screenshot_1788884575_1.png files there.

@@ -213,12 +213,21 @@ transfer experiment is rejected after its matched comparison.
 
 The broader frame audit has reviewed manager/main-loop hooks, decoder readiness,
 GPU submission/state, text/list reuse and image/sprite ownership; it is not a
-completed whole-codebase audit. Stable pager recording and two-descriptor glyph
-rotation have actual-source host gates but await hardware measurement against
-the accepted main baseline. Consecutive identical-glyph reuse is excluded for
+completed whole-codebase audit. Pager recording is accepted in main e0e120e8,
+with permanent gate 94f28ca6: matched SNES893 runs improve 58.259/58.759 to
+59.141/59.394 FPS and p99 31/31 to 30/30 ms. Full matrix, 39 host views with
+valid-context closures, 42 N64 views and repeated active-list theme changes pass.
+SD readback matches 8b681bdebf71de55481e2c3efd42623b4fac2a9147367754302ebb9768421251.
+Two-descriptor glyph rotation is rejected: matched runs give 58.477/58.853 FPS
+baseline versus 58.054/58.130 candidate, with no residual render-time gain.
+Consecutive identical-glyph reuse is excluded for
 low frequency in surveyed labels. An active-viz sound-tap threshold early exit
 passes 20,588 modeled ring-state cases but has no N64 timing or ordinary Final
 Fight benefit claim. Cache-tail publication is proof-only,
 including unresolved qualification of the complete publication contract. These
 are separate from already rejected boot micro-optimizations and do not reopen
-those experiments. See ui-testing.md for exact artifact and inventory references.
+those experiments. Mixed-atlas source rejection and private LZ4 wide-copy v2
+have isolated correctness gates and queued ROMs, but no hardware acceptance.
+The naive wide-copy v1 is rejected for increased modeled instruction count.
+PDSB next-block lookahead is being qualified separately against the newly
+accepted main baseline. See ui-testing.md for exact artifacts and results.
