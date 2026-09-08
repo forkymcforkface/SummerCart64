@@ -117,3 +117,62 @@ python3 tests/no_logo.py --source sw/bootloader --baseline . --output build/no-l
 ```
 
 It compares the complete plain, text, and error-message framebuffers against v2.20.2 with ASan/UBSan and rejects linking the decorative logo. Real-console VI and exception entry remain hardware checks.
+
+## Atomic native SD READ_AT
+
+After the READ_AT firmware change, the default suite includes:
+
+```sh
+python3 tests/run.py --suite read-at --output build/host-tests
+python3 tests/read_at.py --output build/read-at-host
+```
+
+This suite requires only the current SC64 checkout, Python 3.9+ and a host GCC
+with ASan/UBSan. It does not need the historical baseline Git object, a
+PhosphorOS checkout, N64 or ARM compiler, firmware image, or hardware. `CC`
+selects the host compiler command. Other suites retain their existing Git
+baseline prerequisites. Running before READ_AT is present fails explicitly.
+
+A standalone container run from the SC64 root is:
+
+```sh
+docker run --rm -v "$PWD:/work" -w /work ubuntu:24.04 sh -c \
+  'apt-get update -qq && apt-get install -y -qq --no-install-recommends python3 gcc libc6-dev libasan8 libubsan1 && python3 tests/read_at.py --output build/read-at-host'
+```
+
+Package installation affects only the disposable container. A normal Linux
+host can run the Python command directly without Docker or package downloads.
+Generated extracts, binaries, result logs and source hashes stay beneath the
+explicit output directory; production source and tests/ are rejected outputs.
+Every process has a 120-second timeout, sanitizer failures are fatal, warnings
+are errors and core dumps are disabled. Missing or partial completion fails.
+
+Current cfg.c supplies address translation, diagnostics, selected dispatch
+cases and command/error enums. Current sd.c supplies sd_read_sectors, SD
+response/status enums, transfer limit and timeout; sd.h supplies real errors,
+lock values and sector size. The mock BRAM capacity is checked against the
+actual N64 sc64_buffers_t.BUFFER declaration in sw/bootloader/src/sc64.h, and
+its address comes from that header. No production function body or private
+protocol-constant snapshot is checked into the fixture.
+
+The oracle compares current legacy I then s with current R over 4,224 cases:
+zero/valid/oversized counts, sector wrap, first/second lock loss, initialized
+and uninitialized cards, byte swap, byte/block addressing, CMD18 failure,
+CRC failure and timeout. It compares all result bytes, cursor, replies, lock
+calls, LED activity, starts, aborts and CMD12 completion. Another 24 cases
+exercise 32-bit byte-length overflow before any LED/DMA side effect. Diagnostic
+capability/unknown-ID/ADC checks preserve cursor, lock and read state.
+
+The legacy oracle comes from the same current source; it is not a claim to
+execute historical firmware. Only its I/s cases are selected. Diagnostics
+also use the current owner, including an unknown-ID no-side-effect check.
+A cursor-assignment mutation must fail the exact differential assertion; a
+removed bounds guard must fail the exact overflow-side-effect assertion.
+Those errors are generated from current source and their assertion messages
+are required, so an unrelated crash is not accepted as a negative-test pass.
+
+The model substitutes lock, SD command/DMA completion, LED, ADC and reply I/O
+boundaries. It does not execute the whole controller service loop, the FPGA,
+physical SD timing, USB transport or flash/recovery. Existing RTL gates, exact
+firmware readback, card roundtrips and playback/hardware qualifications remain
+separate requirements before firmware acceptance.
