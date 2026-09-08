@@ -1113,3 +1113,57 @@ Directory filename copy, systems.dat4K/16K buffers, current text-onlyO2 and
 current heap logging are qualified or preparing final hardware comparisons.
 A duplicate cart-version query and within-block FAT-cache copies are new
 research leads, not accepted changes.
+
+### Current compiler rejection and smaller follow-ups
+
+Text-onlyO2 is rejected on the accepted combined stack. Actual-SD candidate
+ready346/345ms versus baseline warm340ms and restored341/341ms; warm SD reads
+35973us versus35681/36159us. Every SD upload/download hashes equally. The
+candidate ROMf52ae318834d700503f620907d5672f5fd39c96eb5ce98b67935b461a36af7ed
+is not retained. Restoring the makefile and forcing text recompilation reproduces
+accepted8db94f9e byte for byte; default carts build passes. Earlier isolated O2
+benefit does not justify retention. The later already-built Count adjunct is
+preserved as an unneeded diagnostic artifact, not a separate untested algorithm.
+
+Directory filename copy initially varies363/366ms against366/366/367 controls.
+Repeat candidate361/361/361 (Counts25529164/25534516/25528726) versus restored
+362/363/363 (25590265/25626896/25606204) shows about1.6ms median improvement.
+Current production integration remains pending. Parent actual-backend gate passes
+235,800 cases per owner and the exact255-byte name negative with fatal sanitizers.
+Initial parent container setup misses a directory/include; those attempts fail
+before tests and the complete rerun passes.
+
+Systems catalog4KiB buffering warms at364ms;16KiB365/364ms; restored366/367ms.
+The smaller candidate is selected for a current-stack comparison, not yet accepted.
+Parent actual parser/CSV gates pass generic, generated-SC64 and malformed fixtures
+with22 read/buffering conditions; permanent tests additionally cover allocation
+failures and already-loaded behavior. The installed file size is awaiting direct
+SD inspection; source11,321B and generated1,990B are not interchangeable facts.
+
+Current-stack heap log Count candidate24477227/24445508, controls24486816/24506652
+before and24534489/24487984 after, indicate approximately0.9ms median earlier
+readiness. Frontend boot_ms excludes the changed log interval. Clean integrated
+carts/lint pass with the expanded existing RTC gate (2,560 cases and both specific
+negatives); real clean-ROM qualification and commit remain pending. The first
+proposed standalone heap gate is superseded by extending the existing RTC owner.
+
+Final combined scan attribution passes both real boots. FatFs directory path open
+costs3,358/3,238us across16 calls; first directory reads21,370/21,050us across16;
+later reads2,046/2,079us across29. systems.dat f_open costs286/288us, with no
+other FatFs file open in this scan window; its whole parser load6,598/6,494us.
+Scopes overlap. The unqueued directory-only intermediate is superseded by this
+combined file/directory probe and preserved. These results favor investigating
+cold read amplification, not introducing a relative-path or directory-cache seam.
+
+Within-block read batching passes parent153,600 mixed-operation comparisons,
+unaligned destinations/guards, wrap, eviction and exact failed-fill negative.
+Hardware comparison is queued. Independent1KiB/512B cache-block geometry trials
+retain the128KiB data cap and8KiB bulk threshold; they require boot and runtime
+performance qualification because extra slots/transactions have costs.
+
+Cart-version caching has actual-init/null/error/retry gates and a fresh matched
+pair ready. Parent rejects the initial stale packaged artifacts; fresh clean and
+Count baselines exactly match the shared e710 baselines00534c8d/4ad97820.
+All earlier non-fresh cart-version artifacts are excluded. The separate duplicate
+button-mode write is not removed: the earlier init ignores individual command
+failures, so the module write is its only retry.
