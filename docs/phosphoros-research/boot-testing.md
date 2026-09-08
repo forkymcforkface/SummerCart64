@@ -657,3 +657,82 @@ cpaktool differs only in its build-time banner and resulting GNU build ID
 negative successfully. The earlier derived-image2126-file equality remains a
 separate proof; the full rebuilt tree is not falsely described as byte-identical.
 The canonical image is unchanged pending current-ELF window hardware repeat.
+
+### Accepted current-code compression window and CRC repeat
+
+Current RTC-source matched window comparison:
+
+| Window | Warm SD load ms | Pre-platform ms | Sum ms |
+| --- | ---: | ---: | ---: |
+| 8KiB baseline | 35.976 | 145.987 | 181.963 |
+| 16KiB candidate | 34.363 | 144.878 | 179.241 |
+| 8KiB restored | 35.896 | 145.981 | 181.877 |
+
+Loaded ELF bytes, metadata and cache stamp are identical; each SD upload is
+read back and hashed. Every boot/music gate passes. PhosphorOS64fb9051 adds
+the separately named packaging auxiliary;38b9fa55 selects16KiB for SC64 c1;
+e283c914 documents it. Full canonical image and production matrix pass. A
+Windows CRLF patch checkout initially failed the image's patch-apply gate;
+LF attributes/actual file normalization correct it, with no failed image installed.
+Clean606208-byte ROM SHA dd5cde483758f2449d19e1c3af6214c67e4a836c62e6b2e04da0ada0aee84138
+is preserved as window-production-clean.n64. Clean hardware smoke is queued.
+
+Cache-buffer integrated clean ROM boots487ms cold/401ms warm, music515/429ms.
+These are frontend-ready/music metrics, not total power-to-picture times.
+CRC candidate warm repeat420/419ms supports the first419ms against baseline
+422/421ms. Its coherent source integration and full production matrix are running;
+the default actual-source gate is prepared separately with argv-only Docker calls.
+
+### Remaining qualified hardware queue
+
+- MCU group-TX, SD-start-group, timer reciprocal and short polled read: original
+  loader hashes, independent source/RTL/fault proofs and second-agent review pass.
+  Parent now runs baseline/candidates/restored baseline with the original menu,
+  exact firmware component readbacks, two1MiB SD roundtrips and playback checks.
+- Native cursor/status retargeted to2349ab0b (16KiB cache buffers): independent
+  ROMs and counter probe ready; older-source no-gain result remains recorded.
+- Theme string arena, config index, generic4KiB INI buffering and4KiB gamedb
+  index buffering: source/host gates pass; real menu A/B remains pending.
+- TLSF modulo-mask and aligned-peek: parent repeats65536-operation sanitizer
+  traces with identical allocation layouts, plus2097152mask cases and exact
+  wrong-alignment negative. Real N64 A/B remains pending; combinations require
+  a separate merged build and revalidation.
+- ROMPAK bounded DMA search,512-byte SC64 padding and heap-log consolidation
+  remain pending on hardware. No mandatory constructor, RTC/TZ behavior or
+  floating-point exception diagnostic is removed to reduce linked libc size.
+- Allocation phase diagnostic and additional bit-scan candidates are in review;
+  instruction counts are not hardware cycle/performance claims.
+
+### Completed remaining MCU hardware experiments
+
+Every candidate is an independent app-only update from2ff985dc. Full readback
+checks confirm exact app bytes, erased tail, unchanged original4096-byte loader,
+FPGA and formatter bootloader. Each passes live configuration/error queries,
+two exact1MiB SD write/read roundtrips, Final Fight boot/music and ten-second
+playback with zero underrun/producer overrun. These are the exercised safety
+gates, not universal card/power-loss certification.
+
+| MCU | Warm frontend ready ms | Warm SD menu load ms | Result |
+| --- | --- | --- | --- |
+| Baseline | 421 | 27.444 | Reference |
+| Grouped small TX | 422/422 | 27.427 | No boot gain; reject |
+| Grouped SD start | 421/421 | 27.513 | No boot gain; reject |
+| Timer reciprocal | 421/421 | 27.679 | No boot gain; reject |
+| Short polled read | 440/440 | 28.090 | 18-19ms slower; reject |
+| Restored baseline | 422/422 | 27.599 | Restored and exact-verified |
+
+Host SD roundtrip timings overlap baseline process/USB variability. Original
+baseline write540/527ms read402/406ms; restored write539/529 read406/392ms.
+Polled write550/538 read406/408ms. No transfer-performance win is retained.
+Full per-candidate JSON, boot and playback logs are round2/mcu-final-*.
+The current firmware is the proven2ff985dc MCU with the accepted formatter
+bootloader; no new MCU candidate or FPGA change remains installed.
+
+CRC source is retained as2410b611 after repeated positive boot comparisons and
+full production matrix; e8c1a8ee adds its default equivalence gate. The final
+gate compares each incremental chain directly to one independent monolithic
+reference, avoiding redundant re-tests of the reference itself. The window
+option-effect gate is1e14e1ff; its omission negative now fails specifically at
+the missing size effect, while decoder-only validation previously passed it.
+Clean window production boots402/401ms, music430/429ms; packaging gain is in
+the separately measured pre-platform/SD phase, not those frontend metrics.
