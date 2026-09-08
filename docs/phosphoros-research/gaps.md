@@ -150,7 +150,15 @@ Current measured follow-ups: sound reload34ms (scan10ms, FX15.5ms, playlist8.5ms
 initial directory opens25ms and systems.dat first load6.5ms. Counters overlap.
 Agents investigate narrow improvements with first-input sounds, original data
 semantics, error propagation and resource ownership preserved. Config key
-formatting and startup log consolidation have isolated positive results and
-await current-stack acceptance. Lazy directory advance and decoder microchanges
+formatting (root841682c7) and startup log consolidation (rootff917700) pass
+current-stack acceptance; their permanent gates are e71014c4 and0391f0e1.
+Lazy directory advance and decoder microchanges
 have no convincing reproducible gain so far; they are not production changes.
 No FPGA or clock modification belongs to this software round.
+
+Current systems-file buffering, within-block cache copy batching, cart-version
+caching and smaller1KiB/512B cache geometry fail their hardware performance
+comparisons and are excluded. Source-backed opportunities still under test are
+directory name copying, systems parser string copying, a bounded virtual wav64
+guard read, and avoiding the browser build discarded before theme engagement.
+The last item affects lifecycle and requires its additional view gates.
