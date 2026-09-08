@@ -76,7 +76,7 @@ The existing bounded source-DMA experiments are preferable mechanics to reuse.
 
 ## FPGA LZW-only versus N64 composition
 
-The real N64 [receiver comparisons](../../../../../docs/sc64-ui-research/gif-prototype.md)
+The real N64 [receiver comparisons](../../../docs/phosphoros-research/notes/gif-prototype.md)
 already measure PI transfer plus packet application/cache publication:
 
 | Original source case | Full CI8 | Changed tiles | Row spans |
@@ -85,7 +85,7 @@ already measure PI transfer plus packet application/cache publication:
 | Frame 1030, 123 tiles | 15.640 ms | 3.558 ms | 2.827 ms |
 | Frame 1713, 1,200 tiles | 15.648 ms | 28.112 ms | 23.226 ms |
 
-The [actual receiver](../../../../../tools/verify/sc64-gif/receiver.inc)
+The [actual receiver](../../phosphoros-receiver/receiver.inc)
 distinguishes these paths explicitly: `kind == 0` reads `PX` contiguous bytes
 directly into `plane` with `phos_cart_cache_read`. Packet validation, tile
 scatter/row copies and cache writeback are inside `if (kind)` and are skipped

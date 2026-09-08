@@ -1,0 +1,26 @@
+utc,commit,tier,theme,bg_type,scenario,frames,win_ms,fps,p50_ms,p99_ms,note,window_heap,settled_heap,retire_n,retire_bytes,settled_retire_n,settled_retire_bytes
+2026-09-05T21:14:34Z,88976d49,LOW,Ghosts'N Goblins,scroll,browse10-nav,599,10014,59.8,17,23,sc64-ui-production-baseline,523336,692488,0,0,0,0
+2026-09-05T21:15:11Z,88976d49,LOW,Final Fight,ani_gif,browse10-nav,495,10007,49.5,20,34,sc64-ui-production-baseline,761484,936588,0,0,0,0
+2026-09-05T21:16:19Z,88976d49,LOW,Sunset Drive,ani_gif,browse10-nav,297,10013,29.7,32,63,sc64-ui-production-baseline,731396,509700,0,0,0,0
+2026-09-05T21:21:39Z,88976d49,LOW,Final Fight,ani_gif,browse10-nav,475,10020,47.4,20,38,sc64-ui-profile-baseline,769336,944440,0,0,0,0
+2026-09-05T21:22:12Z,88976d49,LOW,Sunset Drive,ani_gif,browse10-nav,293,10014,29.3,33,63,sc64-ui-profile-baseline,795188,510004,0,0,0,0
+2026-09-05T21:24:08Z,88976d49,LOW,Final Fight,ani_gif,browse10-nav,476,10005,47.6,20,40,sc64-ui-profile-cfg-reply,769312,944416,0,0,0,0
+2026-09-05T21:24:38Z,88976d49,LOW,Sunset Drive,ani_gif,browse10-nav,294,10013,29.4,33,63,sc64-ui-profile-cfg-reply,795068,509884,0,0,0,0
+2026-09-05T21:26:49Z,88976d49,LOW,Final Fight,ani_gif,browse10-nav,473,10002,47.3,20,38,sc64-ui-profile-restored,769336,944440,0,0,0,0
+2026-09-05T21:27:22Z,88976d49,LOW,Sunset Drive,ani_gif,browse10-nav,293,10016,29.3,33,63,sc64-ui-profile-restored,795212,510028,0,0,0,0
+2026-09-05T21:37:12Z,d25fe66f,LOW,Final Fight,ani_gif,browse10-nav,486,10018,48.5,20,38,sc64-all-baseline-1,771696,946800,0,0,0,0
+2026-09-05T21:37:45Z,d25fe66f,LOW,Final Fight,ani_gif,browse10-nav,495,10008,49.5,20,32,sc64-all-baseline-2,773524,948628,0,0,0,0
+2026-09-05T21:38:22Z,d25fe66f,LOW,Final Fight,ani_gif,browse10-nav,496,10019,49.5,20,32,sc64-all-baseline-3,770804,945908,0,0,0,0
+2026-09-07T00:30:06Z,dfaedaf7,LOW,Final Fight,ani_gif,browse10-nav,486,10013,48.5,20,36,scripted,778788,953892,0,0,0,0
+2026-09-07T06:02:14Z,a0bc25c9,LOW,Final Fight,ani_gif,browse10-nav,486,10002,48.6,20,38,overlap-baseline-1 fresh boot,778948,954148,0,0,0,0
+2026-09-07T06:02:57Z,a0bc25c9,LOW,Final Fight,ani_gif,browse10-nav,532,10001,53.2,18,31,overlap-baseline-2 warm,630952,948904,0,0,0,0
+2026-09-07T06:03:41Z,a0bc25c9,LOW,Final Fight,ani_gif,browse10-nav,495,10015,49.4,20,32,overlap-baseline-3 warm,771096,946200,0,0,0,0
+2026-09-07T06:05:00Z,a0bc25c9,LOW,Final Fight,ani_gif,browse10-nav,502,10001,50.2,19,32,overlap-usb-1 fresh boot candidate 6a39cafd,778848,953952,0,0,0,0
+2026-09-07T06:05:37Z,a0bc25c9,LOW,Final Fight,ani_gif,browse10-nav,510,10004,51.0,19,31,overlap-usb-2 warm candidate 6a39cafd,773604,948708,0,0,0,0
+2026-09-07T06:06:03Z,a0bc25c9,LOW,Final Fight,ani_gif,browse10-nav,512,10004,51.2,19,31,overlap-usb-3 warm candidate 6a39cafd,770948,946052,0,0,0,0
+2026-09-07T06:08:34Z,a0bc25c9,LOW,Final Fight,ani_gif,browse10-nav,487,10005,48.7,20,36,overlap-baseline-4 fresh boot,778912,954016,0,0,0,0
+2026-09-07T06:10:13Z,a0bc25c9,LOW,Final Fight,ani_gif,browse10-nav,505,10004,50.5,19,35,overlap-usb-4 fresh boot candidate 6a39cafd,766448,951472,0,0,0,0
+2026-09-07T06:25:20Z,6a39cafd,LOW,Final Fight,ani_gif,browse10-nav,491,10019,49.0,20,38,overlap-async-only-1 fresh boot USB guard disabled rejected,776900,952004,0,0,0,0
+2026-09-07T06:26:02Z,6a39cafd,LOW,Final Fight,ani_gif,browse10-nav,523,10022,52.2,19,31,overlap-async-only-2 warm USB guard disabled rejected,628796,946748,0,0,0,0
+2026-09-07T06:26:44Z,6a39cafd,LOW,Final Fight,ani_gif,browse10-nav,529,10020,52.8,18,32,overlap-async-only-3 warm USB guard disabled rejected,626236,944188,0,0,0,0
+2026-09-07T06:28:08Z,6a39cafd,LOW,Final Fight,ani_gif,browse10-nav,489,10019,48.8,20,37,overlap-async-only-4 fresh boot USB guard disabled rejected,776900,952100,0,0,0,0

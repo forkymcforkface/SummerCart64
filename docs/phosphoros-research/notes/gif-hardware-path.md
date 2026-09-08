@@ -1,0 +1,49 @@
+# Minimal original-GIF cart test path
+
+Source audit, 2026-09-05; SC64 fork snapshot `d9d6de7610b94b96cf03875373e246e50a558139`. This proposes a bounded research integration, not a shipped API. No source edits, hardware operations or performance measurements accompany it. The [architecture](../../../../../docs/architecture.md) remains authoritative; [current results and installation state](../ui-testing.md) distinguish simulations from physical tests.
+
+## Keep the existing command channel
+
+The N64 path already is `cart_sc64_n64.c::cart_cmd_to` → PI CFG registers at `0x1FFF0000` → `fw/rtl/n64/n64_cfg.sv` → `n64_scb` → `fw/rtl/mcu/mcu_top.sv` → MCU `sw/controller/src/cfg.c::cfg_process`. The command has two 32-bit arguments, two reply words, busy/error state and optional command IRQ. Unlock, existing command IDs, identifier `SCv2`, register addresses and unrelated IRQ behavior should remain unchanged. The FPGA need not replace CFG or intercept normal commands to decode GIFs.
+
+The narrow addition is an explicitly versioned research GIF command family dispatched by `cfg.c`, with a capability query and start/status/cancel operations. Allocate IDs only after checking the existing N64/USB command namespaces; this document reserves none. The existing diagnostic `%` dispatch is a possible read-only capability extension, but stock rejection must mean unsupported rather than a broken cart. Do not overload persistent configuration/settings, AUX messages or the firmware version as a capability guarantee.
+
+For start, the two arguments can identify a fixed-size, versioned descriptor in owned cart SDRAM and its size. Copy and validate it before returning accepted: source span, dictionary/canvas/output spans, generation, frame/reference and format limits. Status returns bounded state/error and generation; output length/frame metadata can reside in a fixed completion record. Return acceptance promptly, release CFG busy, and let subsequent polls observe progress. A whole-GIF blocking `cfg_process` call would delay `app.c`'s SD, USB, RTC and writeback service loop. Cancel must acknowledge request acceptance separately from **retired**, which means no remaining memory requests or FIFO bytes can write the old generation.
+
+MCU→FPGA control can extend the existing register decoder in `mcu_top.sv` and matching enum in `sw/controller/src/fpga.h`, appending dedicated volatile job registers without renumbering existing ones. These are not free existing GIF registers: they must be implemented. Keep large data off MCU register transfers. `cfg.c` already contains address translation, but acceptance of any valid cart address is insufficient: a GIF descriptor must be restricted to its granted SDRAM spans, with overflow-safe lengths and no overlapping source/dictionary/canvas/output regions.
+
+## Reuse and missing pieces
+
+| Reuse | Required integration |
+|---|---|
+| `fw/rtl/memory/{mem_bus,memory_arbiter,memory_sdram}.sv`, instantiated by `top.sv` | A bounded GIF memory-client adapter and explicit arbitration ownership. Existing arbiter has four clients: N64, CFG, USB DMA, SD DMA. It has no spare GIF port. Do not electrically share a client or replace CFG. A dedicated client requires a reviewed arbiter extension; a mux requires exclusive ownership and correct ACK routing. Preserve PI reservation and current service priority behavior. |
+| `memory_dma.sv`, `dma_scb`, registered `fifo_bus` | Source/output FIFO adaptation, an owned DMA instance or exclusive lease, backpressure and drain. USB/SD DMA instances already belong to those services. Reusing their implementation does not authorize taking their live channels. The DMA-output test proves simulated bytes and retirement mechanics, not output-slot lifetime or SDRAM bandwidth. |
+| Existing research LZW/compositor and memory-bus tests under `vendor/sc64/tests/gif/` | Runtime original-GIF parsing and subblock delivery, actual top-level wiring, reset behavior, capability registers, descriptor validation and completion publication. Host fixture extraction currently supplies metadata; it is not a runtime parser. |
+| `src/platform/cart_sc64_n64.c` cache reservations and aligned PI read/poll paths | Explicit ownership of mutable job storage, generation checks and cancellation before reuse. Do not publish a changing output plane with ordinary immutable cache sealing. |
+| RTK GIF owner, N64 GPU backend and existing CI8/TLUT rendering | Completion/packet validation, source timing, ready/display plane ownership and RDP retirement. Two output slots improve overlap only after their producer/PI/RDP ownership is defined. |
+
+The first physical decoder slice can parse the **original** Final Fight GIF on the N64, stage a bounded image's original compressed bytes and metadata, then ask the FPGA to decode/compose and publish one output. This avoids requiring a PC asset conversion while testing the real decoder. It is not yet an autonomous FPGA whole-file parser or streaming playback. A malformed/unsupported image must fail before touching unowned memory; no host-provided skip flags or predecoded pixels may substitute for decoder input.
+
+## Address and lifetime constraints
+
+`src/platform/cart.h` defines blob handles as SDRAM byte offsets; their PI address is `CART_PI_ROM + blob`. The current arena is **[0x01C00000, 0x033C0000)**, allocated downward with per-entry headers. Use allocations/reservations from that owner, not fixed scratch addresses copied from a benchmark. All source, dictionary, canvas, descriptor and output allocations need bounds and overlap checks in both the N64 setup and hardware adapter.
+
+Adjacent regions are occupied: BGM slots below the image ring, image ring `[0x01800000,0x01C00000)`, media windows `[0x033C0000,0x037C0000)`, GIF64 scratch `[0x037C0000,0x037E0000)`, cache directory `[0x037E0000,0x03800000)`, then USB debug storage through `0x04000000`. Do not borrow these for a decoder. Final Fight's 33,675,601-byte original also exceeds the approximately 23.75 MiB arena, so whole-file staging cannot be the only source strategy.
+
+Two lifecycle boundaries need explicit integration:
+
+1. Normal refresh already calls `rtk_theme_resources_unload` and `view_release_all` **before** `phos_theme_engage` and its `phos_cart_cache_theme` rewind. The unload frees the background, custom sprites and transition, so their existing owner teardown is the correct place to request GIF cancellation. It must also establish writer retirement before returning, or transfer that obligation to a cart barrier before reuse. GPU deferred reclamation occurs later inside `rtk_theme_resources_load`; a deferred free alone is insufficient proof that an FPGA writer stopped. Explicit cache reset via USB bypasses the normal refresh unload and therefore needs the cart-owner barrier directly. Same-theme reload still tears down the owner even when its arena is retained.
+2. `phos_cart_prepare_launch` marks cache data invalid for the next boot, but normal ROM staging in `boot_n64.c` occurs earlier. `phos_launch_handoff_prepare` is also too late to protect the staging writes. The existing launch funnel needs a GIF retirement barrier **before the first ROM staging write**, covering native and module launch paths. Marking `launch_dirty` is persistence protection, not cancellation of an active FPGA writer.
+
+Console reset/power transitions also require a hardware cancellation/reset policy: cart SDRAM survives console power cycles, and the MCU/cart can remain USB-powered. Do not assume N64 reset equals FPGA reset. A new session must reject stale completion records and establish that the prior job has retired. On a retirement timeout, preserve its allocations and refuse reuse/launch; do not turn a timeout into permission to overwrite them.
+
+## First-cart gates
+
+1. Build the unchanged official FPGA baseline using the required Diamond license/toolchain, then the integrated candidate with identical device, constraints and clocks. Inspect full fit, RAM usage and timing; standalone synthesis counts are insufficient. Licensing and integration status remain in the testing ledger.
+2. Simulate descriptor bounds/overflow/overlap rejection, unsupported capability, reset, FIFO starvation, delayed ACKs, cancellation at every active interface and restart with distinct data. Verify no stale writes or cross-generation publication. Exercise the real arbiter with N64/USB/SD peers and test completion ordering after the final memory ACK.
+3. First board test: bounded source span → one actual decoded frame → PI readback → independent original-GIF pixel golden and surrounding guards. Check ordinary CFG identity/version, SD and USB operation before/after. Then cancellation/restart and multiple frames. This establishes functionality, not 60 FPS.
+4. Only after ownership tests pass, measure original-file input, decode/compose, output DMA, PI, CPU packet application and RDP costs together with audio/navigation. Then theme switch, cache reset, launch/abort and console reset tests. Preserve the established performance epoch and compare against the unchanged baseline.
+
+## Recovery references
+
+Use the existing [SC64 hardware procedure](../../../../../.agents/skills/sc64/SKILL.md) for rig operations and USB/FTDI recovery, and the [firmware testing record](../boot-testing.md) for backups/readback hashes. Upstream's [quick-start update procedure](../../00_quick_startup_guide.md) and [initial-programming procedure](../../06_build_guide.md) describe different recovery layers; the latter documents UART programming and cases requiring dedicated programming interfaces. The official [FAQ](https://summercart64.dev/faq.html) describes the cart button's built-in test ROM; it does not establish that a bad FPGA image can recover through that button. Preserve the known-good package and verify the applicable recovery path before the first integrated FPGA flash. This audit does not perform or certify recovery.
