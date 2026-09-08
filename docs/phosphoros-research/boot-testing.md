@@ -1201,3 +1201,66 @@ Both smaller cache geometries are rejected.1KiB blocks ready349/350ms with
 Counts24617064/24687078;512B blocks388/387ms with26447082/26468326; restored
 2KiB blocks346/346ms with24470595/24496293. Correctness/fault gates pass, but
 the boot regression rules out retention without an unnecessary runtime sweep.
+
+### Guard-read acceptance and continued qualification
+
+Root66ed588d accepts unbuffered five-byte wav64 guards only for virtual cart:/
+and stream:/ files;2ef44c0d adds the actual-source permanent gate andc5de3d1d
+documents it. Current clean ROM08e5176d869d4f8b269853cdad3b8795349e17f8d77985c0e8a00b1f4977544b
+warms at340/342ms ready and361/363ms music, versus341/340 and368/367 after
+restoring the baseline. The music delay is21ms versus27ms; UI readiness is
+essentially unchanged. Independent Count repeats give22ms versus27–28ms.
+Carts/lint and parent31,680-case public-outcome/raw-SD/error/ownership gate pass.
+Missing/version rejection, raw-SD buffering, fallback and public decoder remain.
+Final deployment and aggregate runtime checks are still pending.
+
+Systems parser string copies are rejected. Repeat candidate345/343/342ms,
+Counts24423131/24344301/24365585; restored344/342/340ms,
+24397941/24300502/24278973. Cache-key tail copying also has no repeatable gain:
+candidate339/342ms,24219897/24328030; restored341/341ms,24259615/24258759.
+Their actual-source gates pass, but no production change or permanent gate is
+retained. The already-prepared current cache-key build is unneeded, not an
+additional untested algorithm.
+
+Filename copying on the accepted heap-log runtime gives341/342/342ms,
+Counts24250986/24284584/24259347; restored343/344ms,24322151/24343103.
+The median absolute improvement is about1.6ms, consistent with the earlier
+isolated repeat. Integration with the accepted sound change is under test;
+the permanent36,864-case backend/255-byte-negative gate passes independently.
+
+Path joining takes1794/1781us across45 calls,981 required bytes and zero
+failures. A successful-copy-only fast path preserves the original formatter
+for all failures; parent90,179 exact-buffer/log cases and precise negatives
+pass. Its matched0391 Count hardware comparison is in progress. A shared-C
+change still requires the full production matrix before retention.
+
+The cartfs direct-DMA v1 candidate is superseded without hardware testing:
+independent review requires source-address bounds in addition to cached-RDRAM
+and whole-cache-line bounds. The bounded version keeps the original bounce
+path for every excluded input. Parent200,704 cases, signed-count edge cases,
+dirty-neighbor checks and four precise negatives pass; independent review
+finds no blocker. Actual consumers are cart:/ sound/raw-GIF reads, not Final
+Fight's native font or streamed PDS background. Hardware comparison is pending.
+
+Browser initial-build deferral remains a candidate. Parent rejects early
+overstated tests and a fail-open runner; the corrected runner checks its first
+Docker result and the mutant must fail with the exact expected diagnostic.
+Parent rerun passes actual container/rebuild callback traces. Listing rows,
+pins and destinations are not proven by the mocked lower boundaries; real
+host/N64 view checks and the full matrix remain required. Registration still
+precedes theme engagement; only the abandoned initial build is proposed to defer.
+
+CFG argument-pair reads close an old proposal with no retained hardware result.
+Parent gates pass262,144 capture/AUX/reset/save cases,512 DMA schedules and2,560
+stock-RTL phase/data cases. The reproduced baseline is the installedff00d9ed
+MCU. Candidate appa9ee4805c6e6c2169a2524df22749c3201e8353a60e72288df314b2fc4a1f1bb
+adds240 bytes and preserves the original4096-byte recovery prefix. No flash or
+speed claim yet; controlled firmware A/B and physical behavior remain pending.
+
+An evidence-ELF audit explains an old full-file hash mismatch: objcopy
+--dump-section without a distinct output ELF reproduces exactly six changed
+symbol/zero-size TLS-section metadata bytes. All program headers, loaded bytes
+and ROM4ad97820 remain unchanged. The historical actor is unproven. Originals
+and manifests are preserved, with a fresh original-hash reproduction and audit
+under E:/phosphor-boot-round3/mcu-followup/elf-provenance-audit. Future inspections
+use read-only parsing or an explicit separate output ELF; no silent hash refresh.
