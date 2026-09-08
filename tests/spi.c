@@ -8,11 +8,12 @@
 typedef struct
 {
     uint8_t bytes[16];
-    unsigned len, tx, rx, start, stop;
+    unsigned len, tx, rx, duplex, start, stop;
     int active;
 } trace_t;
 static trace_t trace;
 static uint32_t reply;
+static uint16_t header_garbage;
 void hw_spi_start(void)
 {
     assert(!trace.active);
@@ -35,8 +36,23 @@ void hw_spi_tx(uint8_t *p, int n)
 void hw_spi_rx(uint8_t *p, int n)
 {
     assert(trace.active && n == 4);
+    assert(trace.len == 2 && trace.bytes[0] == CMD_REG_READ);
+    memset(trace.bytes + trace.len, 0, 4);
+    trace.len += 4;
     memcpy(p, &reply, 4);
     trace.rx++;
+}
+/* Full-duplex RX includes unspecified header bytes; the data word starts at two. */
+void hw_spi_transfer(uint8_t *tx, uint8_t *rx, int n)
+{
+    assert(trace.active && trace.len == 0 && n == 6);
+    assert(tx[0] == CMD_REG_READ && tx[2] == 0 && tx[3] == 0 && tx[4] == 0 && tx[5] == 0);
+    memcpy(trace.bytes, tx, 6);
+    trace.len = 6;
+    trace.duplex++;
+    rx[0] = header_garbage;
+    rx[1] = header_garbage >> 8;
+    memcpy(rx + 2, &reply, 4);
 }
 #include "baseline.inc"
 #include "candidate.inc"
@@ -65,9 +81,11 @@ static void test(uint32_t reg, uint32_t value)
     b = trace;
     assert(av == value && bv == value && a.start == 1 && b.start == 1 && a.stop == 1 &&
            b.stop == 1 && !a.active && !b.active);
-    assert(a.len == 2 && b.len == 2 && !memcmp(a.bytes, b.bytes, 2));
+    assert(a.len == 6 && b.len == 6 && !memcmp(a.bytes, b.bytes, 6));
     assert(a.bytes[0] == CMD_REG_READ && a.bytes[1] == (uint8_t)reg);
-    assert(a.tx == 2 && b.tx == EXPECT_READ_TX && a.rx == 1 && b.rx == 1);
+    assert(a.tx == 2 && a.rx == 1 && !a.duplex);
+    assert(b.duplex == EXPECT_DUPLEX);
+    assert(b.tx == (EXPECT_DUPLEX ? 0 : EXPECT_READ_TX) && b.rx == !EXPECT_DUPLEX);
     cases++;
 }
 int main(void)
@@ -80,6 +98,11 @@ int main(void)
     for (unsigned r = 0; r < 256; r++)
         for (unsigned v = 0; v < sizeof values / sizeof *values; v++)
             test(r, values[v]);
+    for (unsigned h = 0; h < 65536; h++)
+    {
+        header_garbage = h;
+        test(h, 0xa55aa55a ^ (h * 65537u));
+    }
     uint32_t state = 0x12345678;
     for (unsigned i = 0; i < 100000; i++)
     {
@@ -90,7 +113,7 @@ int main(void)
     }
     printf("PASS cases=%u operations=%u exact byte order, CS boundaries, read values\n",
            cases, cases * 2);
-    printf("Candidate TX calls write=%d read=%d; no hardware timing claimed.\n",
-           EXPECT_WRITE_TX, EXPECT_READ_TX);
+    printf("Candidate TX calls write=%d split-read=%d duplex=%d; no hardware timing claimed.\n",
+           EXPECT_WRITE_TX, EXPECT_READ_TX, EXPECT_DUPLEX);
     return 0;
 }

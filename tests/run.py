@@ -154,7 +154,14 @@ def mcu(args):
         mapping = {'fpga_reg_get':label + '_get', 'fpga_reg_set':label + '_set'}
         text = ''.join(rename(function(source['fpga.c'], n), mapping) for n in mapping)
         suite.write(label + '.inc', original_diagnostics(text, 'incompatible-pointer-types') if label == 'baseline' else text)
-    suite.test('spi', defines=['-DEXPECT_WRITE_TX=1', '-DEXPECT_READ_TX=1'])
+    duplex = args.spi == 'duplex'
+    if duplex:
+        helper = suite.source(prefix + 'hw.c')
+        function(helper, 'hw_spi_transfer')
+        if 'hw_spi_transfer' not in function(candidate['fpga.c'], 'fpga_reg_get'):
+            raise RuntimeError('Full-duplex register-read implementation is required')
+    defines = ['-DEXPECT_WRITE_TX=1', '-DEXPECT_READ_TX=1', '-DEXPECT_DUPLEX=' + str(int(duplex))]
+    suite.test('spi', defines=defines)
     if grouping:
         text = (suite.out / 'baseline.inc').read_text() + (suite.out / 'candidate.inc').read_text()
         text += function(candidate['fpga.c'], 'fpga_reg_set_words')
@@ -163,7 +170,7 @@ def mcu(args):
                 mapping = {'fpga_reg_get':label + '_get', 'fpga_reg_set':label + '_set', n:label + '_' + n}
                 text += rename(function(source['sd.c'], n), mapping)
         suite.write('functions.inc', text)
-        suite.test('groups')
+        suite.test('groups', defines=defines)
     suite.finish()
 
 
@@ -173,6 +180,7 @@ def main():
     parser.add_argument('--source', type=Path, default=TESTS.parent, help='SC64 checkout; defaults to parent of tests/')
     parser.add_argument('--suite', choices=['all', 'cursor', 'bounded', 'mcu'], default='all')
     parser.add_argument('--mcu', choices=['byte', 'combined'], default='combined')
+    parser.add_argument('--spi', choices=['split', 'duplex'], default='duplex', help='Expected candidate register-read transport; split tests historical batching')
     args = parser.parse_args()
     args.source = args.source.resolve()
     args.output = args.output.resolve()

@@ -20,7 +20,7 @@ typedef struct
 typedef struct
 {
     uint8_t bytes[32];
-    unsigned length, rx, tx;
+    unsigned length, rx, tx, duplex;
 } frame_t;
 typedef struct
 {
@@ -93,6 +93,20 @@ void hw_spi_rx(uint8_t *data, int length)
     memcpy(data, &value, 4);
     f->rx += 4;
 }
+/* Reuse the same register-response model, then account for one physical DMA call. */
+void hw_spi_transfer(uint8_t *tx, uint8_t *rx, int length)
+{
+    assert(trace.active && length == 6);
+    frame_t *f = &trace.frames[trace.frames_n - 1];
+    assert(f->length == 0 && tx[0] == CMD_REG_READ);
+    assert(tx[2] == 0 && tx[3] == 0 && tx[4] == 0 && tx[5] == 0);
+    hw_spi_tx(tx, 2);
+    hw_spi_rx(rx + 2, 4);
+    rx[0] = 0xa5;
+    rx[1] = 0x5a;
+    f->tx = 0;
+    f->duplex = 1;
+}
 #include "functions.inc"
 
 static void reset_trace(void)
@@ -119,7 +133,7 @@ static void compare(unsigned frames_saved, unsigned bytes_saved)
     {
         frame_t *f = &trace.frames[i];
         if (f->bytes[0] == CMD_REG_READ)
-            assert(f->tx == 1 && f->rx == 4);
+            assert(f->tx == !EXPECT_DUPLEX && f->rx == 4 && f->duplex == EXPECT_DUPLEX);
     }
     unsigned a = 0, b = 0;
     for (unsigned i = 0; i < baseline.frames_n; i++)

@@ -24,11 +24,13 @@ Individual suites and intermediate MCU state:
 ```sh
 python3 tests/run.py --output build/host-tests --suite cursor
 python3 tests/run.py --output build/host-tests --suite bounded
-python3 tests/run.py --output build/host-tests --suite mcu --mcu byte
+python3 tests/run.py --output build/host-tests --suite mcu --mcu byte --spi split
 python3 tests/run.py --output build/host-tests --suite mcu --mcu combined
 ```
 
-The default requires combined MCU batching. `--mcu byte` permits the interim
+The default requires combined MCU batching and full-duplex register reads.
+`--spi split` tests the historical split header/read implementation; a missing
+full-duplex call or helper fails the default run. `--mcu byte` permits the interim
 byte-only implementation; if a grouping helper exists it is always tested.
 A missing required helper, config mismatch, extraction error, compile error,
 sanitizer finding, assertion, timeout or nonzero process exit fails the run.
@@ -49,8 +51,10 @@ successful overall exit. Compile diagnostics are retained in suite results.log.
   exact 64 MiB and oversized input are covered. LBA32 boundary guards use a
   synthetic in-memory database offset and a callback recording the last legal
   sector; they do not require a 2 TiB disk image.
-- SPI bytes: 103,072 cases / 206,144 actual-function operations check single-register
+- SPI bytes: 168,608 cases / 337,216 actual-function operations check single-register
   read/write bytes, CS boundaries, returned values and reduced helper calls.
+  All 65,536 possible two-byte header replies are discarded correctly by the
+  actual full-duplex register-read function; all six MOSI bytes match baseline.
 - Register groups: 93,248 cases compare separately routed actual stock/current
   SD-command and DMA functions. Check busy/error responses, return values,
   byte swapping, trigger-last order, frame/byte savings, optimized read-header
@@ -77,6 +81,10 @@ client compatibility, button cadence, save scheduling, PI alignment or outlet-
 to-picture timing. The bounded fixture validates the private menu consumer;
 generic CREATE_LINKMAP can still return a short map for a truncated chain,
 which menu_read detects through remaining sectors.
+
+The full-duplex SPI fixture mocks DMA transfer, including arbitrary received
+header bytes; it does not execute STM32 DMA register accesses or prove board
+timing. The actual helper is required and its source hash is recorded.
 
 The function extractor accepts the current straightforward C definitions and
 fails if expected names disappear. SD type/enum changes require explicit test
