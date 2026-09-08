@@ -595,3 +595,65 @@ The 8 KiB candidate first repeats 413/413 ms versus baseline warm 422 ms;
 restored baseline and 16 KiB controls remain pending. No gain is accepted yet.
 CRC loop unrolling, config indexing, and allocation reduction remain separate
 candidates; no CRC validation or cache identity checks are removed.
+
+### Retained RTC and binary-cache buffering
+
+PhosphorOS `68845a42` retains RTC overlap; `a7dd24bb` adds its actual-source
+1280-case readiness/fallback gate to lint. Clean integrated ROM SHA256
+ e0f429e0781e544496c5c50eea9810e4ffc6f9ce4fcedaa9d00efe7f2a1f98a4
+boots cold 498 / warm 413 ms, music 525/441 ms. Read-only RTC query reports
+source=1, 2026-09-08T00:51:28, weekday 2. Clean combined totals are health
+checks; the matched RTC window comparison establishes its isolated gain.
+
+PhosphorOS `2349ab0b` retains 16 KiB buffering for the two binary cache reads.
+Independent warm ready measurements on fixed-metadata ROMs:
+
+| Variant | Ready ms | Music ms | Disposition |
+| --- | --- | --- | --- |
+| Original 1 KiB buffer | 422, restored 423/423 | 450, restored 451/450 | Baseline |
+| 8 KiB | 413/413 | 441/441 | Works, slower than 16 KiB |
+| 16 KiB | 409/409 | 437/437 | Retained |
+| Unbuffered | 415 | 443 | Works, slower than 16 KiB |
+
+All use the original file format and checks. Buffer ownership ends at fclose;
+only one additional 16 KiB buffer exists at a time. Canonical full matrix,
+lint and existing language/theme cache fixtures pass. Clean integrated ROM
+bddc42b065001641d887d1ce5e83a5dcc30a0ba264d31092845983ea2893f0dc
+is preserved as round3/buffer-production-clean.n64 for queued hardware smoke.
+
+The 8 KiB diagnostic attributes language read/validation 20.890 ms versus
+26.889 ms default, theme 32.073 versus 34.208 ms. Unbuffered diagnostic reads
+language index 4.121 ms, arena 11.208 ms and theme body 5.972 ms. Diagnostic
+build totals are not used as clean performance comparisons.
+
+Config detail independently repeats 206 inserted rows, no replacements:
+scan/hash 4.564 ms, table growth 0.406 ms, strdup/copy 12.082 ms. Allocation
+cost dominates; the pending config index cannot eliminate the latter cost.
+Theme-arena parent rerun passes both real-owner suites, cache lifecycle tests,
+and exact assertion failures for ownership/order negatives. Hardware is pending.
+
+### Independent CRC and native read comparisons
+
+CRC8 unroll first baseline/candidate/restored baseline: cold515/515/513 ms,
+warm422/419/421 ms, music450/447/449 ms. The 2-3 ms warm lead needs another
+candidate repeat before retention. Actual-source parent test passes all lengths
+0..4096, 16 alignments, larger payloads and streaming chunk chains; skipping
+one byte fails specifically at length8.
+
+Original-source native counter: dram_calls138, cart_calls41, reads179,
+sets179, sectors1821, nonempty_dram138, extra_sets0, bounce_sectors0.
+The independent within-call cursor candidate has no removable SET work on this
+build. Ready baseline420/421, cursor422/421, status-reuse422/422,
+restored422/423 ms. Both candidates boot/play normally but neither establishes
+a performance gain; neither is retained. The accepted16KiB cache buffers can
+introduce longer reads, so matched candidates are retargeted to2349ab0b before
+closing this interaction. No cross-call cursor cache or bus lock is invented.
+
+Full compressor Docker recipe builds under a research tag. Its stock tree
+matches2123/2126 files exactly. The two library archives have identical object
+members/order/symbol tables, differing only in ar modification-time fields.
+cpaktool differs only in its build-time banner and resulting GNU build ID
+(25 bytes). Parent reruns the bounded comparison and changed-executable-byte
+negative successfully. The earlier derived-image2126-file equality remains a
+separate proof; the full rebuilt tree is not falsely described as byte-identical.
+The canonical image is unchanged pending current-ELF window hardware repeat.
