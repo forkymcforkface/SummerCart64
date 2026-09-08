@@ -961,3 +961,42 @@ independent packaging review. Its signed stage1 is byte-identical to upstream;
 canonical packing moves TOC0x1930 to0x1980 without changing executable payloads.
 Legitimate generated cookies remain intact. Current Count hardware is underway;
 no loader performance result or acceptance yet. No FPGA changes are involved.
+
+### Current-stack acceptance and further parent trials
+
+Root078e6a77 accepts unbuffered loose native sprite reads after the complete
+production matrix, default64-case owner gate and specific double-free negative.
+Clean current production ROM478f4d609b92668716334c3d72962167275e47432b73cc8a7834cb10445def04
+boots Final Fight cold440/warm361ms, music466/388ms; the prior index-only
+production warm result is377ms. Ten-second playback records576UI frames,
+574GIF frames/598ticks and zero audio underruns or producer overruns. Both
+Ghosts'N Goblins and Final Fight switch successfully, with zero retired GPU
+resources after settling. Persistent final deployment remains queued.
+
+The old-MCU READ_AT qualification is repeated with power status correctly
+redirected away from debug stdin:13checks pass, no failures or transport errors.
+New firmware remains unflashed. Current078e clean and absolute Count pairs are
+staged to include the capability-query cost before boot_t0 in the comparison.
+
+The loader-only full-cache candidate records warm first-platform Count6476436,
+against6792036/6792139 bracketing controls: about6.734ms earlier entry. Warm
+frontend ready391ms versus392/392ms; SD loads35103us versus35892/34939us.
+This is a positive isolated result, with production integration still pending.
+No MCU loader, FPGA, clock or signed menu stage1 changes are involved.
+
+Unrestricted indexed source-atlas reuse is rejected before hardware. Actual
+linked native-parser allocation modeling accepts otherwise-valid helper sprite
+files padded to1MiB and preserves all pixels, but reuse retains that entire
+allocation instead of a compact atlas. No such padded asset is uploaded to the
+cart. Map-only atlas reduction keeps the original ownership and compact output;
+its full matrix passes and current production hardware/default-gate qualification
+is ongoing. An initial delivered gate has an undeclared EXPECTED_MAPS macro;
+that lint failure is not counted as a pass and is being corrected.
+
+Sector-only menu padding is rejected after actual-SD three-boot A/B/B testing.
+Every upload/download hashes identically. Warm SD load baseline27369/27428us,
+candidate27351/27262us, restored27364/27307us. Ready baseline421/422ms,
+candidate422/423ms, restored422/423ms. The roughly0.1ms difference is within
+observed variation and does not justify a production packaging change. The
+candidate removes10240zero bytes from the old458752-byte menu; current c1
+packaging is unchanged.
