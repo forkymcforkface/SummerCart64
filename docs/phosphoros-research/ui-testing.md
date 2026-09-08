@@ -1315,7 +1315,8 @@ and never replace the clean production SD image.
 
 The immutable installed PDSB asset is 30711105 bytes, SHA256
 aca12fcc49b4e9bc92cdcb8668dd1074e91d9b0bebc100ecfd42499f7d0e62b0,
-with1717 320x240 CI8 frames. The following candidates are under qualification:
+with1717 320x240 CI8 frames. The initial qualification status below is historical;
+completed comparisons and integration status follow it:
 
 | Candidate | Evidence and current status |
 | --- | --- |
@@ -1343,3 +1344,71 @@ covered PDS9; independent review requires a PDSB-only route before hardware.
 The preliminary pair is unqualified and not tested. A nested sound diagnostic
 is queued to separate sound_poll's own mixer call from next-song prefetch;
 the later frame-start mixer scope cannot establish that earlier call's cost.
+
+
+### Completed PDSB decoder qualification and integration
+
+The PDSB-only complete-input specialization is accepted in root 89bacff4;
+rootccf570af adds the default verification gate and rootf9dc5119 documents it.
+It remains private to the existing N64 GIF owner. A pinned SDK-source generator
+removes only the PI-DMA watermark checks after the caller has completed its
+compressed record transfer. Generic SDK consumers, initial loads and PDS9 retain
+the original decoder. No FPGA, clock, authored animation timing or display-plane
+retirement change is involved.
+
+The unchanged clean browse10-nav ABBA measures baseline 51.4/51.4 FPS versus
+candidate 52.3/52.0 FPS. Baseline p50 is 19/19 and p99 is 32/35 ms; candidate p50
+is 18/19 and p99 is 34/31 ms. GIF delivery is 498/504 versus 513/512 frames. All
+captures have zero audio underruns, producer overruns and retired GPU bytes.
+Detailed ABAB separately measures average unpack 7126/7158 us versus 6896/6881 us.
+One detailed baseline has an anomalously low sound-poll cost; it is not evidence
+for an overall detailed-profile FPS gain. The clean repeats establish the modest
+accepted gain. All 42 N64 catalog view cases pass, with zero audio faults.
+
+Clean baseline ROM SHA256 is
+ae6415a585eca1b5f091226e8e1ea9139d198ed72347e51d2e174c3b1d57c028;
+accepted candidate and final integrated ROM SHA256 are both
+2f38fc013bc18cb92629d28115a40cfa86c2497f0d2b7ef9ba12b03d3e30fe1a.
+The integrated ROM is byte-identical to the hardware-qualified candidate.
+All packed ELF loadable segments match the fresh ELF; the private 320-byte
+routine matches the modeled candidate and the generic 448-byte routine remains
+byte-identical to stock. Every normal cart verification checks generated source
+and provenance, including stale or tampered outputs independent of make mtimes.
+
+Qualification includes all 1717 installed records against a bounded reference
+and actual assembled stock/private MIPS,1056 synthetic cases per variant in
+both 4/8MB models, and252 actual-caller completion/failure cases under fatal
+ASan/UBSan and warning-as-error compilation. Source/output drift, generated-file
+tampering and premature completion have precise negative controls. All three
+N64 cart builds and final canonical lint pass. Earlier failed lint runs remain
+preserved; final-lint-v2.log is the successful final run. Ignored fixture copies
+have an explicit hash manifest, not new committed fixture snapshots.
+
+Evidence: E:/phosphor-boot-round3/gif-lz4-complete-input/ (asset-results.json,
+artifacts-pdsb.json and integration/final-artifact.json); hardware logs
+fps-lz4-clean-{base,candidate}{1,2}-browse10.log and
+fps-lz4-candidate-views.log under E:/phosphor-boot-round3/hardware/.
+
+### Sound prefetch and remaining frame audit
+
+The independent sound-prefetch clean ABBA is positive: baseline 50.6/50.6 FPS
+versus candidate 53.5/53.9 FPS, p99 35/35 versus 35/34 ms, with zero audio faults.
+It is pending main integration and combined-stack verification at this ledger
+update. Logs are hardware/fps-prefetch-{base,candidate}{1,2}-browse10.log under
+the same ignored E output root. These results and the decoder result come from
+separate experiments; neither their FPS gains nor their timing savings are added
+to claim a combined improvement.
+
+The broader audit covers main-loop/manager service hooks, GIF record readiness
+and decode, GPU upload/state boundaries, text atlas and list block reuse, image
+jobs/cache lookup and sprite drawing. The inventory is recorded in
+E:/phosphor-boot-round3/gap-review/frame-owner-inventory-2026-09-08.md.
+Existing stable list rows already use recorded blocks, and image jobs allocate
+at ownership transitions rather than demonstrating an idle per-frame allocation
+problem. A stable pager block and consecutive identical glyph upload reuse are
+unmeasured hypotheses. Cross-block RDP state caching cannot assume C-side mirrors
+track replayed state. Cache-tail publication remains proof-only: the direct-mapped
+cache model does not alone establish write-buffer completion or a hardware gain;
+see mcu-followup/lz4-cache-review/README.md and gif-cache-tail/results.json under
+the E output root. The whole-codebase audit is not complete, and none of these
+remaining hypotheses is represented as an accepted optimization.

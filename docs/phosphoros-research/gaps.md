@@ -187,3 +187,28 @@ Binary-index unbuffered reads and three CRC slicing-by-four forms remain
 hardware trials. Config arena reuse has no narrow safe implementation without
 additional I/O, excessive allocation or a new ownership mechanism; it is not a
 qualified candidate. See boot-testing.md for the evidence and test boundaries.
+
+
+## Frame-time follow-up status (2026-09-08)
+
+The PDSB complete-input decoder is accepted in root 89bacff4, with default gate
+rootccf570af and documentation rootf9dc5119. Clean Final Fight browse10-nav ABBA
+improves 51.4/51.4 to52.3/52.0 FPS; all 42 N64 view cases and audio checks pass.
+The final integrated ROM is byte-identical to the qualified candidate,
+SHA256 2f38fc013bc18cb92629d28115a40cfa86c2497f0d2b7ef9ba12b03d3e30fe1a.
+The existing N64 GIF owner generates a pinned private specialization; stock
+SDK/PDS9 behavior remains intact. Actual-record, assembled-MIPS, caller-readiness,
+negative-control, cart-build and lint evidence is indexed in ui-testing.md.
+
+Independent sound-prefetch ABBA improves 50.6/50.6 to53.5/53.9 FPS, p99 35/35 to
+35/34 ms, with zero audio faults. Main integration and combined-stack validation
+remain pending at this update. No combined gain is claimed. The PDSB boundary
+transfer experiment is rejected after its matched comparison.
+
+The broader frame audit has reviewed manager/main-loop hooks, decoder readiness,
+GPU submission/state, text/list reuse and image/sprite ownership; it is not a
+completed whole-codebase audit. Stable pager recording and consecutive identical
+glyph uploads remain unmeasured leads. Cache-tail publication is proof-only,
+including unresolved qualification of the complete publication contract. These
+are separate from already rejected boot micro-optimizations and do not reopen
+those experiments. See ui-testing.md for exact artifact and inventory references.
