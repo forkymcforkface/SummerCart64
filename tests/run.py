@@ -181,11 +181,18 @@ def formatter(args):
                    check=True, timeout=120)
 
 
+def read_at(args):
+    subprocess.run([sys.executable, str(TESTS / 'read_at.py'),
+                    '--source', str(args.source),
+                    '--output', str(args.output / 'read-at')],
+                   check=True, timeout=120)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--source', type=Path, default=TESTS.parent, help='SC64 checkout; defaults to parent of tests/')
-    parser.add_argument('--suite', choices=['all', 'cursor', 'bounded', 'mcu', 'formatter'], default='all')
+    parser.add_argument('--suite', choices=['all', 'cursor', 'bounded', 'mcu', 'formatter', 'read-at'], default='all')
     parser.add_argument('--mcu', choices=['byte', 'combined'], default='combined')
     parser.add_argument('--spi', choices=['split', 'duplex'], default='duplex', help='Expected candidate register-read transport; split tests historical batching')
     args = parser.parse_args()
@@ -193,7 +200,7 @@ def main():
     args.output = args.output.resolve()
     if args.output == TESTS or TESTS in args.output.parents:
         raise RuntimeError('Generated output must be outside tests/')
-    for name, operation in [('cursor', cursor), ('bounded', bounded), ('mcu', mcu), ('formatter', formatter)]:
+    for name, operation in [('cursor', cursor), ('bounded', bounded), ('mcu', mcu), ('formatter', formatter), ('read-at', read_at)]:
         if args.suite in ['all', name]:
             operation(args)
     print('PASS selected SC64 host regression suites; no hardware tested')
