@@ -1281,3 +1281,46 @@ artifact. No firmware/FPGA update or push occurs in this round.
    consumer before UI A/B; retain software fallback. Simulation and theoretical
    bandwidth are not measured UI improvements.
 5. Restore and verify temporary state after every subsequent hardware round.
+
+## Frame-time follow-up, 2026-09-08
+
+The user parks boot work at approximately 335 ms warm application readiness
+and prioritizes Final Fight background/frame time. Accepted software baseline
+is root e6b69f79, ROM 5b5d5b1cfa407f80df06daa459767e3986b0984e4f407e13800d7bf9a5c0bf1b,
+with accepted ff00d9ed MCU and unchanged FPGA. The production menu is uploaded
+to SD and downloaded with this exact hash, then uploaded to SDRAM and reset.
+No new firmware change belongs to this frame-time round.
+
+The unchanged browse10-nav baseline measures 51.3 FPS, p50 19/p99 34 ms,
+GIF frame501/tick599/drop100, zero audio underruns and producer overruns.
+Idle display rate does not establish navigation frame time or GIF timeline
+delivery. Standard PERF_DRAW includes frame start, background pumping and
+framebuffer wait; it is not isolated rendering CPU time.
+
+An existing PHOS_PERF_DETAIL build, ROM763538bc4fcecf4b7e7c4ec70993c421e4f14cdb2d9e2106280211d4e9202450,
+has independently verified packed ELF loadable bytes and equivalent runtime
+source. Its valid browse10 capture measures 51.0 FPS, p50 19/p99 30 ms,
+GIF498/tick599/drop101 with zero audio/producer faults. Per-call averages are
+GIF unpack7126 us (498 calls, max7859), GIF stage1278 us (511, max5670),
+sound_poll3525 us (510, max7402), browser_scan1057 us (510, max6768), and
+view_draw1572 us (510, max3689). Scopes have different call counts and nesting;
+do not add these averages as a disjoint frame breakdown. Sound polling needs
+narrower attribution before assigning its whole cost to optional prefetch.
+
+Evidence is E:/phosphor-boot-round3/hardware/fps-detail-browse10-v2.log.
+The first fps-detail-browse10.log used incorrect positional arguments and
+selected a fallback rectangle theme; its --theme benchmark row is invalid and
+excluded. Corrected capture restores Final Fight. Profiler builds are temporary
+and never replace the clean production SD image.
+
+The immutable installed PDSB asset is 30711105 bytes, SHA256
+aca12fcc49b4e9bc92cdcb8668dd1074e91d9b0bebc100ecfd42499f7d0e62b0,
+with1717 320x240 CI8 frames. The following candidates are under qualification:
+
+| Candidate | Evidence and current status |
+| --- | --- |
+| Direct PDSB record transfer across a 1 MiB stream boundary | Only29/1717 records cross; max record24703 bytes. Parent actual-owner and precise-negative reruns pass, including final-ticket publication and modeled plane-age guards. Matched clean ROM hardware ABAB is running; no gain claimed. |
+| Complete-input private LZ4 playback decoder | Parent independently repeats all1717 actual records against bounded reference and assembled stock/candidate MIPS code, with exact decoded bytes. Dynamic instruction count falls9.19%; this is not cycle/performance evidence. Caller readiness, private symbol integration and hardware comparison remain pending. |
+| Next-song prefetch/frame scheduling | Source review ongoing; no candidate retained. Current mixer/RSP ordering, source completion and audio refill priority remain protected. |
+
+All generated proofs and matched artifacts remain under E:/phosphor-boot-round3.
