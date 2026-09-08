@@ -531,3 +531,67 @@ for 206 unique rows. Gamedb 15,018 us total: DAT 6,933, index header 2,114,
 fences 3,854, user overlay 521, migration 3 us. Per-call clock overhead and
 unclassified work mean attributed subtotals are not forced to sum exactly.
 Config lookup is now a measured lead; both required startup owners remain eager.
+
+### Accepted cache directory transfers and window sweep
+
+PhosphorOS `d3a404b1` retains the safe cache transfer changes; `749e24e1` adds
+the default lint fault-injection gate. Isolated baseline/candidate/baseline:
+cold 512/501/519 ms and warm 420/415/421 ms. Integrated with root coalescing
+and c1, clean ready 496 ms cold / 410 ms warm, music 523/438 ms. Final
+comment-only rebuilt image cold 494/521 ms passes. Target build and lint pass;
+no diagnostic markers are linked. Ghosts'N Goblins and Final Fight theme
+switches restore twelve root rows and play their expected songs. Final Fight
+playback after switching: 478 frames/10,001 ms, no underrun/producer overrun,
+GIF tick 598/frame 467/drop 131. This is a health check, not an FPS gain claim.
+
+All six full-menu c1 windows pass exact loaded-image decoding and physical
+boot/music gates. Initial comparisons include SD initialization equally:
+
+| Window bytes | Menu bytes | Pre-platform ms | SD load ms | Sum ms | Disposition |
+| ---: | ---: | ---: | ---: | ---: | --- |
+| 2048 | 704512 | 156.859 | 53.535 | 210.394 | Slower; reject |
+| 4096 | 671744 | 150.965 | 52.035 | 203.000 | Slower; reject |
+| 8192 | 638976 | 145.965 | 49.955 | 195.920 | Stock c1 reference |
+| 16384 | 606208 | 144.806 | 48.498 | 193.304 | Repeat/production tool qualification |
+| 32768 | 589824 | 154.671 | 48.073 | 202.744 | Slower; reject |
+| 65535 | 573440 | 162.147 | 46.935 | 209.082 | Slower; reject |
+
+Repeated 16 KiB window warm sum 179.552 ms versus restored 8 KiB 182.395 ms
+(a 2.844 ms reduction). Startup itself repeats 144.792 versus 145.951 ms.
+The larger dictionaries reduce SD bytes but can increase decoder time; size
+alone is not an acceptance criterion. The explicit-window compressor option
+is not present in stock upstream. An additive, separately named compressor
+and its provenance/default-equivalence gates are being evaluated without
+changing the installed stock tools or compiler/library. No custom production
+tool or window setting is accepted yet.
+
+The first config-index proposal is not deployed: parent review caught duplicate
+index insertion and missing sort/hydration/failure-path coverage. The corrected
+variant limits indexing to config, preserves theme behavior, and passes an
+actual-source lifecycle/OOM/collision guard with a failing stale-slot control.
+It remains hardware-unqualified; the 18 ms kv_set attribution includes retained
+allocation costs and is not the predicted index saving.
+
+### RTC overlap and cache read attribution follow-up
+
+RTC baseline/candidate/baseline/candidate real-hardware intervals are
+501734/334593/509307/334480 Count ticks (46.875 ticks per microsecond).
+The complete mount-plus-RTC interval falls from a mean 10.784 ms to 7.137 ms,
+a 3.648 ms reduction. Both candidates report present=1, source=1 and an
+advancing valid clock. The retained readiness barrier takes 56 ticks after
+mount, versus 171549/171563 ticks synchronously. Warm frontend baseline
+427 ms versus candidate 425/424 ms; the first baseline 522 ms is cold and
+is not compared to warm candidates. All boots play Final Fight music.
+Clean integrated build matrix passes; clean hardware acceptance is pending.
+
+The fine cache probe finds language index read 4.988 ms, arena read 12.741 ms,
+CRC 4.296 ms and validation 2.777 ms. Theme body read 8.780 ms, CRC 2.146 ms,
+row hydration 18.932 ms, including key insertion 17.191 ms and its nested
+allocation/copy cost 10.356 ms. These nested values must not be double-counted.
+Actual target Newlib uses a 1024-byte stdio buffer, below the FAT cache's
+16-sector/8192-byte bulk threshold. Two-call 8/16 KiB stream-owned buffering
+candidates pass real-source parser/cache fixtures and are being measured.
+The 8 KiB candidate first repeats 413/413 ms versus baseline warm 422 ms;
+restored baseline and 16 KiB controls remain pending. No gain is accepted yet.
+CRC loop unrolling, config indexing, and allocation reduction remain separate
+candidates; no CRC validation or cache identity checks are removed.
