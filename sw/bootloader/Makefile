@@ -46,8 +46,7 @@ SRC_FILES = \
 	fatfs/ffsystem.c \
 	fatfs/ffunicode.c
 
-ASSET_FILES = \
-	sc64_logo_640_240_dimmed.png
+ASSET_FILES =
 
 SRCS = $(SRC_FILES) $(ASSET_FILES)
 SRC_OBJS = $(patsubst %,%.o,$(SRC_FILES))

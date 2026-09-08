@@ -558,7 +558,7 @@ void test_execute (void) {
     const int test_count = sizeof(tests) / sizeof(tests[0]);
     int current = 0;
 
-    display_init(NULL);
+    display_init();
     display_printf("SC64 Test suite (%d / %d)\n\n", 0, test_count);
 
     display_printf("Initializing...\n");
@@ -580,7 +580,7 @@ void test_execute (void) {
     random_seed = __entropy + c0_count();
 
     while (true) {
-        display_init(NULL);
+        display_init();
         display_printf("SC64 Test suite (%d / %d)\n\n", current + 1, test_count);
 
         display_printf("[ %s tests ]\n\n", tests[current].title);

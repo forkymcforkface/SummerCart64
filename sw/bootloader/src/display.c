@@ -66,26 +66,6 @@ static const vi_regs_t vi_config[] = {{
 }};     
 
 
-static void display_decompress_background (uint32_t *background) {
-    uint32_t *framebuffer = (uint32_t *) (display_framebuffer);
-
-    int pixel_count = (int) ((*background++) / 3);
-    int pixels_painted = 0;
-
-    while (pixels_painted < pixel_count) {
-        uint32_t pixel = *background++;
-
-        int pixel_repeat = (((pixel >> 24) & 0xFF) + 1);
-        uint32_t pixel_value = (((pixel << 8) & 0xFFFFFF00) | 0xFF);
-
-        for (int i = 0; i < pixel_repeat; i++) {
-            cpu_io_write(framebuffer++, pixel_value);
-        }
-
-        pixels_painted += pixel_repeat;
-    }
-}
-
 static void display_clear_background (void) {
     for (int i = 0; i < (SCREEN_WIDTH * SCREEN_HEIGHT); i++) {
         cpu_io_write(&display_framebuffer[i], BACKGROUND_COLOR);
@@ -148,15 +128,11 @@ static void display_draw_string (const char *s) {
 }
 
 
-void display_init (uint32_t *background) {
+void display_init (void) {
     char_x = BORDER_WIDTH;
     char_y = BORDER_HEIGHT;
 
-    if (background != NULL) {
-        display_decompress_background(background);
-    } else {
-        display_clear_background();
-    }
+    display_clear_background();
 
     if (!vi_configured) {
         vi_configured = true;

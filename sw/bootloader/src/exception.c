@@ -4,7 +4,6 @@
 #include "io.h"
 #include "version.h"
 #include "vr4300.h"
-#include "../assets/assets.h"
 
 
 static const char *exception_get_description (uint8_t exception_code) {
@@ -32,7 +31,7 @@ static const char *exception_get_description (uint8_t exception_code) {
 
 
 void exception_fatal_handler (uint32_t exception_code, exception_t *e) {
-    display_init((uint32_t *) (&assets_sc64_logo_640_240_dimmed));
+    display_init();
 
     uint32_t exception_address = e->epc.u32 + (e->cr & C0_CR_BD ? 4 : 0);
 

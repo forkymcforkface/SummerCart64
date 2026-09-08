@@ -2,7 +2,6 @@
 #include "display.h"
 #include "init.h"
 #include "version.h"
-#include "../assets/assets.h"
 
 
 void error_display (const char *fmt, ...) {
@@ -10,7 +9,7 @@ void error_display (const char *fmt, ...) {
 
     deinit();
 
-    display_init((uint32_t *) (&assets_sc64_logo_640_240_dimmed));
+    display_init();
 
     version_print();
     display_printf("[ Runtime error ]\n");

@@ -1,7 +1,6 @@
 #include "display.h"
 #include "sc64.h"
 #include "version.h"
-#include "../assets/assets.h"
 
 
 typedef enum {
@@ -19,7 +18,7 @@ typedef enum {
 
 void interrupts_handler (uint8_t interrupts) {
     if (interrupts == INTERRUPT_NONE) {
-        display_init((uint32_t *) (&assets_sc64_logo_640_240_dimmed));
+        display_init();
 
         version_print();
         display_printf("[ Empty interrupt ]\n");
@@ -42,7 +41,7 @@ void interrupts_handler (uint8_t interrupts) {
         interrupts &= ~(INTERRUPT_PRENMI);
 
         if (display_ready()) {
-            display_init(NULL);
+            display_init();
 
             display_printf("Resetting...\n");
         }
@@ -53,7 +52,7 @@ void interrupts_handler (uint8_t interrupts) {
     if (interrupts & INTERRUPT_TIMER) {
         interrupts &= ~(INTERRUPT_TIMER);
 
-        display_init((uint32_t *) (&assets_sc64_logo_640_240_dimmed));
+        display_init();
 
         version_print();
         display_printf("[ Watchdog timeout ]\n");
@@ -63,7 +62,7 @@ void interrupts_handler (uint8_t interrupts) {
     }
 
     if (interrupts != INTERRUPT_NONE) {
-        display_init((uint32_t *) (&assets_sc64_logo_640_240_dimmed));
+        display_init();
 
         version_print();
         display_printf("[ Unhandled interrupt(s) ]\n");
