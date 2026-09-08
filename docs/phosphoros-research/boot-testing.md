@@ -1000,3 +1000,37 @@ candidate422/423ms, restored422/423ms. The roughly0.1ms difference is within
 observed variation and does not justify a production packaging change. The
 candidate removes10240zero bytes from the old458752-byte menu; current c1
 packaging is unchanged.
+
+### Indexed-font integration and READ_AT qualification
+
+Root44b60c96 retains the map-only indexed atlas optimization;3e3f2433 adds
+its default actual-source gate. The full production matrix and corrected lint
+pass. The initial gate failure was an undefined test macro; the exact shipped
+shell now passes4000randomized atlas comparisons, capacity/OOM and a specific
+bad-palette negative. No failed run is treated as a pass.
+
+Clean candidate d3598a19e47a78fdf9b386b07b64f56097a774778cc07745cbaf15bc5c0d581c
+reports warm ready357/357ms, music383/383ms and assets97/98ms. Restoring accepted
+native-only ROM478f4d60 reports362/362ms, music388/388ms and assets103ms.
+Both real320x240 captures are shown to the user; text appearance is intact.
+Their animated backgrounds differ, so whole-frame byte equality is not claimed.
+The separate exact installed-font pixel/palette gate is the equality evidence.
+Both theme switches succeed; GPU retirement settles to zero. Ten-second playback
+after switching records558UIframes/547GIFframes, zero underruns/producer overruns.
+This smoke differs from a fresh-boot performance epoch and is not an FPS gain.
+
+Parent flashes only the reviewed READ_AT MCU payload ff00d9ed... using the
+validated MCU-only package. Before/after full firmware backups verify exact
+application bytes, erased tail, original4096-byte MCU recovery loader and
+unchanged FPGA/formatter bootloader. Same-value configuration/invalid-ID USB
+gates pass, as does the1MiB SD scratch upload/download hash. New command
+qualification passes15cases with no failures: negotiated capability, start/end
+reads of1/16/33sectors, aligned/bounce destinations, byte comparisons/canaries,
+and invalid0/17counts with cursor checks. No malformed legacy address-overflow
+read is issued. The new MCU is currently a qualified trial; timing acceptance
+and production driver integration are still pending.
+
+SC64 loader production carts/lint pass after adding the existing packaging
+LF-checkout convention for its patch. Generated header b3a5ca77458dd8ac6918de7676324792f9e045458a222e6a53a45e0c32515818
+matches the isolated hardware winner. Current clean integrated ROM a5f392fa72a2b2b8208e1d7654a652fff2c5dee98cde06c56390224352916120
+is queued for real-cart qualification. No production loader commit yet.
